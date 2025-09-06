@@ -13,16 +13,20 @@ app.use('/product', ProductRouter);
 app.get('/', (req, res) => {
   res.send('response from express');
 });
+
 app.get('/add', (req, res) => {
   res.send('response from add');
 });
+
 app.get('/all', (req, res) => {
   res.send('response from all');
 });
+
 app.get('/delete', (req, res) => {
   res.send('response from delete');
 });
+
 //starting the server
 app.listen(port, () => {
-  console.log('server is running on port ');
+  console.log(`server is running on port ${port}`);
 });
