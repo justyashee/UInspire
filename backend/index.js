@@ -1,9 +1,9 @@
-const express = require( 'express');
+const express = require('express');
 const app = express();
 const UserRouter = require('./routers/UserRouter');
 const ProductRouter = require('./routers/ProductRouter')
 
-const port =5000;
+const port = 5000;
 //middleware
 app.use(express.json());
 app.use('/user', UserRouter);
@@ -17,8 +17,6 @@ app.get('/', (req, res) => {
 app.get('/add', (req, res) => {
   res.send('response from add');
 });
-
-
 
 app.get('/all', (req, res) => {
   res.send('response from all');
