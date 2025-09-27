@@ -18,6 +18,8 @@ app.get('/add', (req, res) => {
   res.send('response from add');
 });
 
+
+
 app.get('/all', (req, res) => {
   res.send('response from all');
 });
