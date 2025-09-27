@@ -64,7 +64,7 @@ router.get('/getbyid/:id', (req, res) => {
 });
 
 router.delete('/delete/:id', (req, res) => {
-  Model.findByIdAndDelete(req.params.id)  
+  Model.findByIdAndDelete(req.params.id)
     .then((result) => {
       res.status(200).json(result);
     }).catch((err) => {
@@ -73,8 +73,8 @@ router.delete('/delete/:id', (req, res) => {
     });
 });
 
-router.put('/update/:id', (req,res) => {
-  Model.findByIdAndUpdate(req.params.id, req.body,{ new: true })  //new:true to return the updated document at first send
+router.put('/update/:id', (req, res) => {
+  Model.findByIdAndUpdate(req.params.id, req.body, { new: true })  //new:true to return the updated document at first send
     .then((result) => {
       res.status(200).json(result);
     }).catch((err) => {
@@ -94,17 +94,17 @@ router.get('/update', (req, res) => {
 });
 
 router.post('/authenticate', (req, res) => {
-  const {email,password} = req.body;
+  const { email, password } = req.body;
   model.findOne({ email, password })
     .then((result) => {
       if (result) {
         //create token
-        const{ _id, name } = result;
+        const { _id, name } = result;
         jwt.sign(
-          {_id, name},
+          { _id, name },
           process.env.JWT_SECRET,
           { expiresIn: '1h' },
-         //h=hours, m=minutes, d=days, nothing for seconds
+          //h=hours, m=minutes, d=days, nothing for seconds
           (err, token) => {
             if (err) {
               console.log(err);
