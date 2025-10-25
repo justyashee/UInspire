@@ -2,9 +2,13 @@ const express = require('express');
 const app = express();
 const UserRouter = require('./routers/UserRouter');
 const ProjectRouter = require('./routers/ProjectRouter')
+const cors = require('cors');
 
 const port = 5000;
 //middleware
+app.use(cors({
+  origin: ['http://localhost:3000'],
+}));
 app.use(express.json());
 app.use('/user', UserRouter);
 app.use('/project', ProjectRouter);
