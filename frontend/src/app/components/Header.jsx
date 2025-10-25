@@ -15,18 +15,18 @@ const Header = () => {
         <nav>
           <ul className="flex gap-8 text-gray-600 font-medium">
             <li>
-              <Link href="/home" className="hover:text-purple-600 transition-colors">
+              <Link href="/" className="hover:text-purple-600 transition-colors">
                 Home
               </Link>
             </li>
             <li>
               <Link href="/about" className="hover:text-purple-600 transition-colors">
-                About
+                About Us
               </Link>
             </li>
             <li>
               <Link href="/contact" className="hover:text-purple-600 transition-colors">
-                Contact
+                Contact Us
               </Link>
             </li>
             <li>
