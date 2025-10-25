@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 // --- STYLES (Inline for demonstration) ---
@@ -99,24 +100,37 @@ const NewProjectCard = ({ onClick }) => (
 
 // 3. Main Page Component
 const ProjectDashboard = () => {
+
+  const router = useRouter();
+
   const [projects, setProjects] = useState([
     { id: 1, title: 'Website Redesign', description: 'Updated UI/UX for main site.', date: '2025-01-15' },
     { id: 2, title: 'Mobile App Beta', description: 'Testing phase for iOS and Android.', date: '2025-02-28' },
   ]);
   
   const handleAddNewProject = () => {
+
+    axios.post(`${process.env.NEXT_PUBLIC_API_URL}/project/add`)
+    .then(response => {
+      const newProject = response.data;
+      router.push(`/generator/${newProject._id}`);
+    })
+    .catch(error => {
+      console.error('Error adding new project:', error);
+    });
+
     // Logic to simulate a project generation/addition
-    const newProjectId = projects.length + 1;
-    const today = new Date().toISOString().slice(0, 10);
+    // const newProjectId = projects.length + 1;
+    // const today = new Date().toISOString().slice(0, 10);
     
-    const newProject = {
-      id: newProjectId,
-      title: `Generated Project ${newProjectId}`,
-      description: 'AI-generated task placeholder.',
-      date: today,
-    };
+    // const newProject = {
+    //   id: newProjectId,
+    //   title: `Generated Project ${newProjectId}`,
+    //   description: 'AI-generated task placeholder.',
+    //   date: today,
+    // };
     
-    setProjects(prevProjects => [...prevProjects, newProject]);
+    // setProjects(prevProjects => [...prevProjects, newProject]);
   };
   
   return (

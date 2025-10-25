@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import React, { useState } from 'react';
 
@@ -89,7 +89,7 @@ const ProjectGeneratorPage = ({ onGenerate }) => {
   const handleGenerateCode = () => {
     // 1. **Generation Logic Placeholder**
     console.log("Generating code for prompt:", prompt);
-    
+
     // 2. **Simulate Code Generation**
     const newCode = `function MyComponent() {\n  // Code generated from prompt: "${prompt}"\n  return (\n    <div className="generated-div">\n      <h1>Hello from the Generator!</h1>\n      <p>Your content here.</p>\n    </div>\n  );\n}`;
     setCode(newCode);
@@ -98,7 +98,7 @@ const ProjectGeneratorPage = ({ onGenerate }) => {
     // In a real app, you would dynamically render the generated code in the preview box.
     const newPreview = `Generated content for: ${prompt}`;
     setPreviewContent(newPreview);
-    
+
     // 4. Call the parent function (optional: to add it to the dashboard)
     // onGenerate({ title: `Prompt: ${prompt.substring(0, 20)}...`, code: newCode });
   };
@@ -119,7 +119,7 @@ const ProjectGeneratorPage = ({ onGenerate }) => {
           onChange={(e) => setPrompt(e.target.value)}
           rows="3"
         />
-        <button 
+        <button
           style={styles.generateButton}
           onClick={handleGenerateCode}
           disabled={!prompt.trim()}
@@ -130,13 +130,13 @@ const ProjectGeneratorPage = ({ onGenerate }) => {
 
       {/* Code and Preview Boxes */}
       <div style={styles.resultsGrid}>
-        
+
         {/* Code Box */}
         <div style={styles.box}>
           <div style={styles.boxHeader}>Generated Code (JSX/React)</div>
           <pre style={styles.codeArea}>{code}</pre>
         </div>
-        
+
         {/* Preview Box */}
         <div style={styles.box}>
           <div style={styles.boxHeader}>Preview</div>
