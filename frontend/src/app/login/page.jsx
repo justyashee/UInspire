@@ -106,7 +106,7 @@ const Login = () => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const res = await axios.post('http://localhost:5000/api/login', values);
+        const res = await axios.post('http://localhost:5000/user/authenticate', values);
         if (res.data.success) {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('user', JSON.stringify(res.data.user));

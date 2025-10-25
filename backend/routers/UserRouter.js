@@ -83,19 +83,10 @@ router.put('/update/:id', (req, res) => {
     });
 });
 
-router.get('/delete', (req, res) => {
-  res.send('delete response from user router');
-});
-router.get('/id', (req, res) => {
-  res.send('id response from user router');
-});
-router.get('/update', (req, res) => {
-  res.send('update response from user router');
-});
 
 router.post('/authenticate', (req, res) => {
   const { email, password } = req.body;
-  model.findOne({ email, password })
+  Model.findOne({ email, password })
     .then((result) => {
       if (result) {
         //create token
