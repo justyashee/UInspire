@@ -142,7 +142,6 @@
 // export default ProjectDashboard;
 
 'use client';
-
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -152,7 +151,6 @@ const DashboardPage = () => {
     { id: 1, title: 'Website Redesign', description: 'Updated UI/UX for main site.', date: '2025-01-15' },
     { id: 2, title: 'Mobile App Beta', description: 'Testing phase for iOS and Android.', date: '2025-02-28' },
   ]);
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white font-sans px-6 py-20">
       {/* Header */}
