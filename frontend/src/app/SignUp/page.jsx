@@ -110,8 +110,13 @@ import { FaApple } from 'react-icons/fa';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 const SignUp = () => {
+
+  const router = useRouter();
+
   const formik = useFormik({
     initialValues: {
       fullName: '',
@@ -131,15 +136,15 @@ const SignUp = () => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const res = await axios.post('http://localhost:5000/api/signup', values);
-        if (res.data.success) {
-          localStorage.setItem('user', JSON.stringify(res.data.user));
-          localStorage.setItem('token', res.data.token);
-          alert('Signup successful!');
+        const res = await axios.post('http://localhost:5000/user/add', values);
+        if (res.status === 200) {
+
+          toast.success('Signup successful!');
           resetForm();
+          router.push('/login');
         }
       } catch (error) {
-        alert('Signup failed: ' + (error.response?.data?.message || 'Unknown error'));
+        toast.error('Signup failed: ' + (error.response?.data?.message || 'Unknown error'));
       } finally {
         setSubmitting(false);
       }
@@ -212,11 +217,10 @@ const SignUp = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.fullName}
-              className={`bg-transparent border ${
-                formik.errors.fullName && formik.touched.fullName
+              className={`bg-transparent border ${formik.errors.fullName && formik.touched.fullName
                   ? 'border-red-500'
                   : 'border-gray-700'
-              } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
+                } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.fullName && formik.touched.fullName && (
               <p className="text-red-500 text-sm mt-1">{formik.errors.fullName}</p>
@@ -231,11 +235,10 @@ const SignUp = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.email}
-              className={`bg-transparent border ${
-                formik.errors.email && formik.touched.email
+              className={`bg-transparent border ${formik.errors.email && formik.touched.email
                   ? 'border-red-500'
                   : 'border-gray-700'
-              } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
+                } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.email && formik.touched.email && (
               <p className="text-red-500 text-sm mt-1">{formik.errors.email}</p>
@@ -250,11 +253,10 @@ const SignUp = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               value={formik.values.password}
-              className={`bg-transparent border ${
-                formik.errors.password && formik.touched.password
+              className={`bg-transparent border ${formik.errors.password && formik.touched.password
                   ? 'border-red-500'
                   : 'border-gray-700'
-              } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
+                } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.password && formik.touched.password && (
               <p className="text-red-500 text-sm mt-1">{formik.errors.password}</p>

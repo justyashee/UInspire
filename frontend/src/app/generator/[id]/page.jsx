@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from 'react';
@@ -42,7 +41,7 @@ export default function GeneratorPage() {
   };
   try {
     // 1. Send the prompt to your backend API
-    const response = await fetch('/api/generate-ui', {
+    const response =  fetch('/api/generate-ui', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -56,7 +55,7 @@ export default function GeneratorPage() {
     }
 
     // 2. Parse the response (assuming the API returns JSON like: { code: "...", description: "..." })
-    const data = await response.json();
+    const data = response.json();
 
     // 3. Update the state with the received data
     setCode(data.code || '// Error: Backend returned no code.');
