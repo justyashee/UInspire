@@ -146,7 +146,7 @@ export default function GeneratorPage() {
 
         try {
             // 1. Send the prompt to your backend API
-            const response = await fetch('/api/generate-ui', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/generate-ui`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -12,7 +12,7 @@ const AboutUs = () => {
       <Header className="bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50" />
 
       {/* Hero Section */}
-      <section className="flex-1 flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 overflow-hidden">
+      <section className="h-screen flex-1 flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 overflow-hidden">
         {/* Glowing background orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -left-16 w-80 h-80 bg-purple-800 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-pulse"></div>
@@ -53,7 +53,7 @@ const AboutUs = () => {
       </section>
 
       {/* Our Mission & Vision */}
-      <section className="py-24 bg-gradient-to-b from-[#0a0a1a] via-[#0d001a] to-[#050505] text-center px-6">
+      <section className="h-screen py-24 bg-gradient-to-b from-[#0a0a1a] via-[#0d001a] to-[#050505] text-center px-6">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -124,7 +124,7 @@ const AboutUs = () => {
       </section> */}
 
       {/* Core Values Section */}
-      <section className="py-24 bg-gradient-to-t from-black via-[#0a0a1a] to-[#0f001f] text-center px-6">
+      <section className="h-screen py-24 bg-gradient-to-t from-black via-[#0a0a1a] to-[#0f001f] text-center px-6">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

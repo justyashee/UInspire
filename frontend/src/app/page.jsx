@@ -115,7 +115,7 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] flex flex-col text-white font-sans overflow-x-hidden">
       {/* Dark Neon Navbar */}
-      <Header className="bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50" />
+      <Header className=" bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50" />
 
       {/* Hero Section */}
       <section className="flex-1 flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 overflow-hidden">
@@ -183,7 +183,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 bg-gradient-to-b from-[#0a0a1a] via-[#0d001a] to-[#050505] text-center">
+      <section className="h-screen py-24 bg-gradient-to-b from-[#0a0a1a] via-[#0d001a] to-[#050505] text-center">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -222,7 +222,7 @@ const Home = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 bg-gradient-to-t from-black via-[#0a0a1a] to-[#0f001f] text-center relative">
+      <section className="h-screen py-24 bg-gradient-to-t from-black via-[#0a0a1a] to-[#0f001f] text-center relative">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
