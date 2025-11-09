@@ -1,6 +1,10 @@
+<<<<<<< HEAD
+
+=======
+>>>>>>> c2b0f219c5363f67a35f8b72c1314e705db8213f
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Header from '../../components/Header';
@@ -13,9 +17,20 @@ export default function GeneratorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+<<<<<<< HEAD
+    useEffect(() => {
+        // Reset error when prompt changes
+        setError(null);
+    }, [prompt]);
+
+    const handleGenerate = async () => {
+        const trimmed = prompt.trim();
+        if (!trimmed) return;
+=======
   const handleGenerate = async () => {
     const trimmed = prompt.trim();
     if (!trimmed) return;
+>>>>>>> c2b0f219c5363f67a35f8b72c1314e705db8213f
 
     setIsLoading(true);
     setError(null);
@@ -89,88 +104,5 @@ return (
             Describe the UI you want — then generate code & preview.
           </p>
         </div>
-
-        <Link
-          href="/projectHistory"
-          className="px-4 py-2 text-sm text-gray-300 border border-gray-700 rounded-xl hover:bg-white/5 transition"
-        >
-          View History →
-        </Link>
-      </motion.div>
-
-      {/* Prompt input */}
-      <div className="bg-[#0f0f1f] border border-purple-800 rounded-2xl p-6 mb-8 shadow-[0_8px_40px_rgba(168,85,247,0.08)]">
-        <label className="block text-sm text-gray-300 mb-2">Prompt</label>
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          rows={3}
-          placeholder="E.g. Design a responsive card layout for a blog post summary..."
-          className="w-full resize-y bg-[#0b0b12] border border-purple-700 rounded-lg p-3 text-sm text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-600"
-        />
-
-        <div className="mt-4 flex items-center gap-3">
-          <button
-            onClick={handleGenerate}
-            disabled={!prompt.trim()}
-            className="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 disabled:opacity-50 font-semibold shadow-[0_8px_30px_rgba(168,85,247,0.2)] transition"
-          >
-            Generate
-          </button>
-
-          <button
-            onClick={resetAll}
-            className="px-4 py-2 rounded-xl border border-gray-700 text-sm text-gray-300 hover:bg-white/5 transition"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
-
-      {/* Output Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Code Section */}
-        <div className="bg-[#0b0b12] border border-[#111218] rounded-2xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-purple-300">Generated Code</h2>
-            <button
-              onClick={() => navigator.clipboard.writeText(code)}
-              className="text-xs text-gray-300 hover:text-white"
-            >
-              Copy
-            </button>
-          </div>
-          <pre className="bg-[#07101a] rounded-md p-4 overflow-auto text-xs text-green-300 font-mono max-h-[420px]">
-            {code}
-          </pre>
-        </div>
-
-        {/* Preview Section */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="bg-[#0b0b12] border border-[#111218] rounded-2xl p-4 flex flex-col"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-semibold text-blue-300">Preview</h2>
-          </div>
-          <div className="flex-1 rounded-md p-6 border-2 border-dashed border-blue-800 bg-gradient-to-br from-[#020617] to-[#04102a] text-gray-200 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm text-gray-300 mb-2">{preview}</p>
-              <div className="mt-4">
-                <div className="inline-block p-4 bg-white text-black rounded-lg">
-                  Rendered UI
-                </div>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </main>
-
-    <Footer />
-  </div>
-);
-
-
+    );
+}
