@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> c2b0f219c5363f67a35f8b72c1314e705db8213f
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -17,7 +13,6 @@ export default function GeneratorPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-<<<<<<< HEAD
     useEffect(() => {
         // Reset error when prompt changes
         setError(null);
@@ -26,11 +21,6 @@ export default function GeneratorPage() {
     const handleGenerate = async () => {
         const trimmed = prompt.trim();
         if (!trimmed) return;
-=======
-  const handleGenerate = async () => {
-    const trimmed = prompt.trim();
-    if (!trimmed) return;
->>>>>>> c2b0f219c5363f67a35f8b72c1314e705db8213f
 
     setIsLoading(true);
     setError(null);
