@@ -2,6 +2,7 @@ const { Schema, model, Types } = require('../connection');
 
 
 const projectSchema = new Schema({
+
     
     user: {
         type: Types.ObjectId, 
@@ -12,7 +13,7 @@ const projectSchema = new Schema({
   
     title: {
         type: String,
-        required: true,
+        default: 'Untitled Project',
         trim: true,
         maxlength: 100 
     },
@@ -20,26 +21,20 @@ const projectSchema = new Schema({
    
     prompt: {
         type: String,
-        required: true
+        default: 'Describe your UI here...',
     },
     
     code: {
         type: String,
-        required: true
+        default: 'Write Code Here...',
     },
     
     description: {
         type: String,
-        maxlength: 500
+        maxlength: 500,
+        default: 'No description provided.'
     },
 
-   
-    language: {
-        type: String,
-        default: 'jsx' 
-    },
-
-    
     createdAt: {
         type: Date,
         default: Date.now

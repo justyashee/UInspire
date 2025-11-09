@@ -7,24 +7,32 @@ import { FaApple } from 'react-icons/fa';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const Login = () => {
+
+  const router = useRouter();
+
   const formik = useFormik({
     initialValues: { email: '' },
     validationSchema: Yup.object({
       email: Yup.string().email('Invalid email').required('Email is required'),
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
+      console.log(values);
       try {
         const res = await axios.post('http://localhost:5000/user/authenticate', values);
-        if (res.data.success) {
+        if (res.status === 200) {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('user', JSON.stringify(res.data.user));
-          alert('Login successful!');
+          toast.success('Login successful!');
+          router.push('/projectHistory');
           resetForm();
         }
       } catch (error) {
-        alert('Login failed: ' + error.response?.data?.message);
+        console.log(error);
+        toast.error('Login failed: ' + error.response?.data?.message);
       } finally {
         setSubmitting(false);
       }
