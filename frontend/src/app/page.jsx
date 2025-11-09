@@ -110,6 +110,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
+import Link from 'next/link';
 
 const Home = () => {
   return (
@@ -170,13 +171,16 @@ const Home = () => {
             whileTap={{ scale: 0.98 }}
             className="px-10 py-4 bg-purple-600 hover:bg-purple-700 rounded-2xl font-semibold text-lg shadow-[0_0_25px_rgba(168,85,247,0.7)] transition-transform hover:shadow-[0_0_35px_rgba(168,85,247,0.9)]"
           >
-            Get Started
+            <Link href="/signup">
+              Get Started
+            </Link>
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.98 }}
-            className="px-10 py-4 border-2 border-purple-500 hover:border-blue-500 rounded-2xl font-semibold text-lg hover:text-blue-400 shadow-[0_0_20px_rgba(96,165,250,0.4)] transition-transform hover:shadow-[0_0_35px_rgba(96,165,250,0.6)]"
-          >
+          
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.98 }}
+              className="px-10 py-4 border-2 border-purple-500 hover:border-blue-500 rounded-2xl font-semibold text-lg hover:text-blue-400 shadow-[0_0_20px_rgba(96,165,250,0.4)] transition-transform hover:shadow-[0_0_35px_rgba(96,165,250,0.6)]"
+            >
             Learn More
           </motion.button>
         </motion.div>
