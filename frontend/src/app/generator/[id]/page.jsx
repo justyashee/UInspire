@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
+import { useParams } from 'next/navigation';
+import parse from 'html-react-parser';
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -11,6 +13,8 @@ export default function GeneratorPage() {
   const [preview, setPreview] = useState('Preview will appear here.');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const { id } = useParams();
 
   useEffect(() => setError(null), [prompt]);
 
@@ -24,10 +28,13 @@ export default function GeneratorPage() {
 
     // 🔹 Step 1: CALL BACKEND API
     try {
-      const response = await fetch('/api/generate-ui', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/generate-and-save`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: trimmed }),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ prompt: trimmed, projectId: id }),
       });
 
       if (!response.ok) {
@@ -35,10 +42,12 @@ export default function GeneratorPage() {
       }
 
       const data = await response.json();
+      console.log(data);
+      
 
       // 🔹 Step 2: Update UI with API output
-      setCode(data.code || '// Error: No code returned.');
-      setPreview(data.description || 'Preview generated.');
+      setCode(data || '// Error: No code returned.');
+      // setPreview(data.description || 'Preview generated.');
     } catch (err) {
       console.error(err);
       setError('Failed to generate UI.');
@@ -110,7 +119,7 @@ export default function GeneratorPage() {
 
         {/* Preview */}
         <div className="mt-6 p-6 bg-white/10 rounded-xl">
-          {preview}
+          {parse(code)}
         </div>
       </main>
 

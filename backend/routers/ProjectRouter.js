@@ -29,7 +29,7 @@ router.get('/getbyuser', authenticateToken, async (req, res) => {
 });
 
 
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', authenticateToken, async (req, res) => {
     try {
         const doc = await Model.findByIdAndDelete(req.params.id);
         if (doc) {
@@ -46,28 +46,29 @@ router.delete('/delete/:id', async (req, res) => {
 
 router.post('/generate-and-save', authenticateToken, async (req, res) => {
     try {
-        const { prompt } = req.body;
-        const userId = req.user.id;
-        const { generatedCode, title, description } = await callAIGeneratorService(prompt);
+        const { prompt, projectId } = req.body;
+        const userId = req.user._id;
+        // const { generatedCode, title, description } = await callAIGeneratorService(prompt);
+        const generatedResult = await require('../geminiService').getPromptResponse(prompt);
 
+        // const newProjectData = {
+        //     user: userId,
+        //     title: title || prompt.substring(0, 50),
+        //     prompt: prompt,
+        //     code: generatedCode,
+        //     description: description || 'AI generated component.',
+        // };
 
-        const newProjectData = {
-            user: userId,
-            title: title || prompt.substring(0, 50),
-            prompt: prompt,
-            code: generatedCode,
-            description: description || 'AI generated component.',
-        };
+        // const doc = Model.findByIdAndUpdate(newProjectData);
 
-        const doc = await ProjectModel.create(newProjectData);
-
-        res.status(201).json(doc);
+        res.status(201).json(generatedResult);
 
     } catch (error) {
         console.error('Generation Error:', error);
         res.status(500).json({ message: 'Failed to generate and save project.', error: error.message });
     }
 });
+
 router.post("/create", async (req, res) => {
     try {
         const { prompt, code, preview, createdAt } = req.body;

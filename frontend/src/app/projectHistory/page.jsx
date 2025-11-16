@@ -78,6 +78,7 @@ import axios from 'axios';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const DashboardPage = () => {
   const [projects, setProjects] = useState([]);
@@ -105,7 +106,7 @@ const DashboardPage = () => {
 
   const createNewProject = () => {
     axios.post('http://localhost:5000/project/add', {
-     
+
     }, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -119,6 +120,23 @@ const DashboardPage = () => {
       .catch((err) => {
         console.error('Failed to create project:', err);
         setError('Failed to create project. Please try again.');
+      });
+  };
+
+  const deleteProject = (projectId) => {
+    axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/project/delete/${projectId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      }
+    })
+      .then((res) => {
+        toast.success('Project deleted successfully!');
+        setProjects((prev) => prev.filter((proj) => proj._id !== projectId));
+      })
+      .catch((err) => {
+        console.error('Failed to delete project:', err);
+        toast.error('Failed to delete project. Please try again.');
+        // setError('Failed to delete project. Please try again.');
       });
   };
 
@@ -165,6 +183,9 @@ const DashboardPage = () => {
                 <Link href={`/generator/${project._id}`} className="text-blue-400 hover:underline">
                   View Project
                 </Link>
+                <button onClick={() => deleteProject(project._id) } className="text-red-400 hover:underline">
+                  Delete Project
+                </button>
                 <p className="text-gray-300 line-clamp-3">{project.preview || 'No description available'}</p>
               </motion.div>
             ))

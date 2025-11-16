@@ -7,6 +7,7 @@ const SECRET_KEY = process.env.JWT_SECRET || 'your-fallback-secret';
 function authenticateToken(req, res, next) {
     // 1. Get the Authorization header
     const authHeader = req.headers['authorization']; 
+    // console.log(req.headers);
     
     // The token format is typically 'Bearer TOKEN_STRING'. 
     // We split it to get just the TOKEN_STRING.
