@@ -46,7 +46,7 @@ export default function GeneratorPage() {
   };
   try {
     // 1. Send the prompt to your backend API
-    const response =  fetch('/api/generate-ui', {
+    const response = fetch('/api/generate-ui', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
