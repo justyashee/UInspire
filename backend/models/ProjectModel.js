@@ -18,7 +18,7 @@ const projectSchema = new Schema({
         maxlength: 100 
     },
     
-   
+    
     prompt: {
         type: String,
         default: 'Describe your UI here...',
