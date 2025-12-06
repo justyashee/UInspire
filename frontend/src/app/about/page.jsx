@@ -6,13 +6,16 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const AboutUs = () => {
+
+  
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] flex flex-col text-white font-sans overflow-x-hidden">
+    <div className="bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] flex flex-col text-white font-sans overflow-x-hidden">
       {/* Dark Neon Navbar */}
       <Header className="bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50" />
 
       {/* Hero Section */}
-      <section className="h-screen flex-1 flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 overflow-hidden">
+      <section className="h-screen flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 ">
         {/* Glowing background orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -left-16 w-80 h-80 bg-purple-800 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-pulse"></div>

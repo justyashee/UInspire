@@ -28,6 +28,16 @@ router.get('/getbyuser', authenticateToken, async (req, res) => {
     }
 });
 
+router.get('/getall', async (req, res) => {
+    try {
+        const docs = await Model.find();
+        res.status(200).json(docs);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch all projects.', error: error.message });
+    }
+});
+
 
 router.delete('/delete/:id', authenticateToken, async (req, res) => {
     try {
@@ -78,6 +88,58 @@ router.post("/create", async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: "Error saving project" });
+    }
+});
+
+router.post('/update-code', authenticateToken, async (req, res) => {
+    try {
+        const { projectId, code } = req.body;
+        const userId = req.user._id;
+
+        if (!projectId || !code) {
+            return res.status(400).json({ message: 'projectId and code are required.' });
+        }
+
+        const doc = await Model.findByIdAndUpdate(
+            projectId,
+            { code: code, updatedAt: new Date() },
+            { new: true }
+        );
+
+        if (!doc) {
+            return res.status(404).json({ message: 'Project not found.' });
+        }
+
+        // Verify user owns this project
+        if (doc.user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: 'Unauthorized: You cannot update this project.' });
+        }
+
+        res.status(200).json({ message: 'Code updated successfully', doc });
+
+    } catch (error) {
+        console.error('Update Error:', error);
+        res.status(500).json({ message: 'Failed to update code.', error: error.message });
+    }
+});
+
+router.get('/getbyid/:id', authenticateToken, async (req, res) => {
+    try {
+        const doc = await Model.findById(req.params.id);
+        
+        if (!doc) {
+            return res.status(404).json({ message: 'Project not found.' });
+        }
+
+        // Verify user owns this project
+        if (doc.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Unauthorized.' });
+        }
+
+        res.status(200).json(doc);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Failed to fetch project.', error: error.message });
     }
 });
 
