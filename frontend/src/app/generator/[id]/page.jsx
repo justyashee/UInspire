@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { useParams } from 'next/navigation';
+import Editor from "@monaco-editor/react";
 
 export default function GeneratorPage() {
   const [prompt, setPrompt] = useState('');
@@ -183,7 +184,7 @@ export default function GeneratorPage() {
         {error && <p className="text-red-400 mt-4">{error}</p>}
         {successMessage && <p className="text-green-400 mt-4">{successMessage}</p>}
 
-        {/* Code Editor */}
+       {/* Code Editor
         <div className="mt-6">
           <label className="text-gray-300 block mb-2 font-semibold">Edit Code:</label>
           <textarea
@@ -198,7 +199,59 @@ export default function GeneratorPage() {
           >
             {isSaving ? 'Saving…' : 'Save Code'}
           </button>
-        </div>
+        </div> */}
+        {/* Code Editor */}
+<div className="mt-8">
+  <label className="text-gray-300 block mb-3 font-semibold text-lg">
+    Edit Code:
+  </label>
+
+  <div
+    className="
+      bg-gradient-to-br from-[#0a0a1a] to-[#050509]
+      p-[2px] rounded-2xl shadow-xl 
+      border border-purple-800/30
+      hover:shadow-purple-600/40 
+      transition-all duration-300
+    "
+  >
+    <div className="rounded-xl overflow-hidden bg-[#0c0c14] border border-purple-900/40">
+      <Editor
+        height="420px"
+        language="html"
+        theme="vs-dark"
+        value={editedCode}
+        onChange={(value) => setEditedCode(value)}
+        options={{
+          fontSize: 14,
+          minimap: { enabled: false },
+          lineNumbers: "on",
+          smoothScrolling: true,
+          scrollBeyondLastLine: false,
+          automaticLayout: true,
+          padding: { top: 16 },
+          cursorBlinking: "smooth",
+        }}
+      />
+    </div>
+  </div>
+
+  {/* Save Button */}
+  <button
+    onClick={handleSaveCode}
+    disabled={isSaving}
+    className="
+      mt-4 px-6 py-2 rounded-xl font-semibold
+      bg-green-600 hover:bg-green-700
+      transition-all duration-200
+      shadow-lg hover:shadow-green-500/30
+      disabled:opacity-50
+    "
+  >
+    {isSaving ? "Saving…" : "Save Code"}
+  </button>
+</div>
+
 
         {/* Preview in Iframe */}
         <div className="mt-6">
