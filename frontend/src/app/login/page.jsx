@@ -15,7 +15,7 @@ const Login = () => {
   const router = useRouter();
 
   const formik = useFormik({
-    initialValues: { email: '' ,password: ''    },
+    initialValues: { email: '', password: '' },
     validationSchema: Yup.object({
       email: Yup.string().email('Invalid email').required('Email is required'),
     }),
@@ -58,7 +58,7 @@ const Login = () => {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-md bg-[#0e0e1a]/80 backdrop-blur-xl border border-purple-800/50 rounded-3xl p-8 shadow-[0_0_25px_rgba(128,0,255,0.3)]"
       >
-        
+
 
         <h2 className="text-3xl font-bold text-white text-center mb-2">
           Welcome to <span className="text-purple-400">UI Generator</span>
@@ -88,11 +88,10 @@ const Login = () => {
             type="email"
             name="email"
             placeholder="Enter your email..."
-            className={`bg-transparent border ${
-              formik.errors.email && formik.touched.email
+            className={`bg-transparent border ${formik.errors.email && formik.touched.email
                 ? 'border-red-500'
                 : 'border-gray-700'
-            } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
+              } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.email}
@@ -101,11 +100,10 @@ const Login = () => {
             type="password"
             name="password"
             placeholder="Enter your password..."
-            className={`bg-transparent border ${
-              formik.errors.password && formik.touched.password
+            className={`bg-transparent border ${formik.errors.password && formik.touched.password
                 ? 'border-red-500'
                 : 'border-gray-700'
-            } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
+              } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
             value={formik.values.password}
@@ -126,9 +124,20 @@ const Login = () => {
           >
             {formik.isSubmitting ? 'Logging in...' : 'Login with Email'}
           </motion.button>
+          <p className="mt-4 text-sm text-gray-400 text-center">
+            Don’t have an account?{" "}
+            <a
+              href="/signup"
+              className="text-purple-400 hover:text-purple-300 font-medium transition"
+            >
+              Sign up
+            </a>
+          </p>
+
         </form>
       </motion.div>
     </div>
+
   );
 };
 
