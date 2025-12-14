@@ -8,13 +8,13 @@ import Footer from '../components/Footer';
 
 const ContactUs = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] flex flex-col text-white font-sans overflow-x-hidden">
+    <div className="bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white font-sans overflow-x-hidden">
       
       {/* Dark Neon Navbar */}
-      <Header className="bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50" />
+      <Header className="bg-[#0a0a1a] border-b border-purple-800 shadow-[0_0_25px_rgba(168,85,247,0.3)] z-50 fixed top-0 w-full" />
 
-      {/* Hero Section */}
-      <section className="flex-1 flex flex-col justify-center items-center text-center px-6 relative py-28 md:py-40 overflow-hidden">
+      {/* Hero Section - Full Screen */}
+      <section className="h-screen w-full flex flex-col justify-center items-center text-center px-6 relative overflow-hidden pt-20">
         {/* Glowing background orbs */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-24 -left-16 w-80 h-80 bg-purple-800 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-pulse"></div>
@@ -36,7 +36,7 @@ const ContactUs = () => {
             repeat: Infinity,
             repeatType: 'mirror',
           }}
-          className="relative text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 drop-shadow-[0_0_30px_rgba(147,51,234,0.6)] mb-6 z-10 animate-textShimmer"
+          className="relative text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-blue-400 to-cyan-400 drop-shadow-[0_0_30px_rgba(147,51,234,0.6)] mb-6 z-10"
         >
           <span className="inline-block bg-[linear-gradient(90deg,#a855f7,#60a5fa,#06b6d4,#a855f7)] bg-[length:200%_auto] bg-clip-text text-transparent animate-gradientFlow">
             Get in Touch <br /> With Us
@@ -53,8 +53,8 @@ const ContactUs = () => {
         </motion.p>
       </section>
 
-      {/* Contact Form Section */}
-      <section className="py-24 px-6 flex justify-center relative">
+      {/* Contact Form Section - Full Screen */}
+      <section className="h-screen w-full flex justify-center items-center px-6 relative overflow-hidden">
         <div className="absolute -top-32 left-10 w-72 h-72 bg-purple-800 rounded-full mix-blend-screen filter blur-3xl opacity-30 animate-pulse"></div>
         <div className="absolute bottom-16 right-20 w-96 h-96 bg-blue-700 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-pulse delay-1000"></div>
 
@@ -62,7 +62,7 @@ const ContactUs = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="w-full max-w-2xl flex flex-col gap-6 bg-[#0f0f1f] p-10 rounded-3xl border border-purple-700 shadow-[0_0_35px_rgba(168,85,247,0.3)] hover:shadow-[0_0_50px_rgba(168,85,247,0.6)] transition-all"
+          className="w-full max-w-2xl flex flex-col gap-6 bg-[#0f0f1f] p-10 rounded-3xl border border-purple-700 shadow-[0_0_35px_rgba(168,85,247,0.3)] hover:shadow-[0_0_50px_rgba(168,85,247,0.6)] transition-all z-10"
         >
           <input
             type="text"
