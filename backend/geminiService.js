@@ -61,6 +61,7 @@ const getPromptResponse = async (prompt="Generate ui for homepage of hotel booki
     }
 };
 
+
 // getPromptResponse();
 
 module.exports = { getPromptResponse };
