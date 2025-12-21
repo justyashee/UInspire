@@ -37,160 +37,154 @@ export default function GeneratorPage() {
           }
         );
 
-        setPrompt(response.data.prompt || '');
-        setCode(response.data.code || '// Generated code will appear here...');
-        setEditedCode(response.data.code || '// Generated code will appear here...');
-      } catch (err) {
-        console.error(err);
-        setError('Failed to load project data.');
-      } finally {
-        setIsLoadingData(false);
-      }
+  setPrompt(response.data.prompt || '');
+  setCode(response.data.code || '// Generated code will appear here...');
+  setEditedCode(response.data.code || '// Generated code will appear here...');
+} catch (err) {
+  console.error(err);
+  setError('Failed to load project data.');
+} finally {
+  setIsLoadingData(false);
+}
     };
 
-    fetchProjectData();
+fetchProjectData();
   }, [id]);
 
-  useEffect(() => setError(null), [prompt]);
-  useEffect(() => setEditedCode(code), [code]);
+useEffect(() => setError(null), [prompt]);
+useEffect(() => setEditedCode(code), [code]);
 
-  // Update iframe content when code changes
-  useEffect(() => {
-    if (iframeRef.current && editedCode) {
-      iframeRef.current.srcdoc = editedCode;
-    }
-  }, [editedCode]);
+// Update iframe content when code changes
+useEffect(() => {
+  if (iframeRef.current && editedCode) {
+    iframeRef.current.srcdoc = editedCode;
+  }
+}, [editedCode]);
 
-  const handleGenerate = async () => {
-    const trimmed = prompt.trim();
-    if (!trimmed) return;
+const handleGenerate = async () => {
+  const trimmed = prompt.trim();
+  if (!trimmed) return;
 
-    setIsLoading(true);
-    setError(null);
-    setCode('// Generating code...');
+  setIsLoading(true);
+  setError(null);
+  setCode('// Generating code...');
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/generate-and-save`, {
-        method: 'POST',
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/generate-and-save`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      },
+      body: JSON.stringify({ prompt: trimmed, projectId: id }),
+    });
+
+if (!response.ok) {
+  throw new Error('API request failed.');
+}
+
+const data = await response.json();
+setCode(data || '// Error: No code returned.');
+setEditedCode(data || '// Error: No code returned.');
+setSuccessMessage('Code generated successfully!');
+setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+  console.error(err);
+  setError('Failed to generate UI.');
+  setCode('// Generation failed.');
+} finally {
+  setIsLoading(false);
+}
+  };
+
+const handleSaveCode = async () => {
+  if (!editedCode.trim()) {
+    setError('Code cannot be empty.');
+    return;
+  }
+
+  setIsSaving(true);
+  setError(null);
+
+    try {
+    const response = await axios.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/project/update-code`,
+      { projectId: id, code: editedCode },
+      {
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({ prompt: trimmed, projectId: id }),
-      });
-
-      if (!response.ok) {
-        throw new Error('API request failed.');
-      }
-
-      const data = await response.json();
-      setCode(data || '// Error: No code returned.');
-      setEditedCode(data || '// Error: No code returned.');
-      setSuccessMessage('Code generated successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) {
-      console.error(err);
-      setError('Failed to generate UI.');
-      setCode('// Generation failed.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSaveCode = async () => {
-    if (!editedCode.trim()) {
-      setError('Code cannot be empty.');
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-
-    try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/project/update-code`,
-        { projectId: id, code: editedCode },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
         }
-      );
+      }
+    );
 
-      setCode(editedCode);
-      setSuccessMessage('Code saved successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
+setCode(editedCode);
+setSuccessMessage('Code saved successfully!');
+setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
-      console.error(err);
-      setError('Failed to save code.');
-    } finally {
-      setIsSaving(false);
-    }
+  console.error(err);
+  setError('Failed to save code.');
+} finally {
+  setIsSaving(false);
+}
   };
 
-  const resetAll = () => {
-    setPrompt('');
-    setCode('// Generated code will appear here...');
-    setEditedCode('// Generated code will appear here...');
-  };
+const resetAll = () => {
+  setPrompt('');
+  setCode('// Generated code will appear here...');
+  setEditedCode('// Generated code will appear here...');
+};
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
-      <Header />
+return (
+  <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
+    <Header />
 
-      <main className="max-w-6xl mx-auto px-6 py-12">
-        <motion.div
-          initial={{ opacity: 0, y: -30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
+    <main className="max-w-6xl mx-auto px-6 py-12">
+      <motion.div
+        initial={{ opacity: 0, y: -30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-8"
+      >
+        <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-400 to-cyan-300">
+          Project Generator
+        </h1>
+        <p className="text-gray-400 mt-1">
+          Describe the UI you want — then generate code & preview.
+        </p>
+      </motion.div>
+
+      {/* Input */}
+      <textarea
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        className="w-full p-4 bg-[#0f0f1a] rounded-lg text-white placeholder-gray-500"
+        placeholder="Describe your UI here..."
+        rows="4"
+      />
+
+      {/* Buttons */}
+      <div className="flex gap-4 mt-4">
+        <button
+          onClick={handleGenerate}
+          disabled={isLoading}
+          className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
-          <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-400 to-cyan-300">
-            Project Generator
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Describe the UI you want — then generate code & preview.
-          </p>
-        </motion.div>
+          {isLoading ? 'Generating…' : 'Generate'}
+        </button>
 
-        {/* Input */}
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              handleGenerate();
-            }
-          }}
-          className="w-full p-4 bg-[#0f0f1a] rounded-lg text-white placeholder-gray-500"
-          placeholder="Describe your UI here..."
-          rows="4"
-        />
+        <button
+          onClick={resetAll}
+          className="px-6 py-2 bg-gray-600 rounded-lg hover:bg-gray-700"
+        >
+          Reset
+        </button>
+      </div>
 
-        {/* Buttons */}
-        <div className="flex gap-4 mt-4">
-          <button
-            onClick={handleGenerate}
-            disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {isLoading ? 'Generating…' : 'Generate'}
-          </button>
+      {/* Error & Success Messages */}
+      {error && <p className="text-red-400 mt-4">{error}</p>}
+      {successMessage && <p className="text-green-400 mt-4">{successMessage}</p>}
 
-          <button
-            onClick={resetAll}
-            className="px-6 py-2 bg-gray-600 rounded-lg hover:bg-gray-700"
-          >
-            Reset
-          </button>
-        </div>
-
-        {/* Error & Success Messages */}
-        {error && <p className="text-red-400 mt-4">{error}</p>}
-        {successMessage && <p className="text-green-400 mt-4">{successMessage}</p>}
-
-        {/* Code Editor
+      {/* Code Editor
         <div className="mt-6">
           <label className="text-gray-300 block mb-2 font-semibold">Edit Code:</label>
           <textarea
@@ -206,72 +200,72 @@ export default function GeneratorPage() {
             {isSaving ? 'Saving…' : 'Save Code'}
           </button>
         </div> */}
-        {/* Code Editor */}
-        <div className="mt-8">
-          <label className="text-gray-300 block mb-3 font-semibold text-lg">
-            Edit Code:
-          </label>
+      {/* Code Editor */}
+      <div className="mt-8">
+        <label className="text-gray-300 block mb-3 font-semibold text-lg">
+          Edit Code:
+        </label>
 
-          <div
-            className="
+        <div
+          className="
       bg-gradient-to-br from-[#0a0a1a] to-[#050509]
       p-[2px] rounded-2xl shadow-xl 
       border border-purple-800/30
       hover:shadow-purple-600/40 
       transition-all duration-300
     "
-          >
-            <div className="rounded-xl overflow-hidden bg-[#0c0c14] border border-purple-900/40">
-              <Editor
-                height="420px"
-                language="html"
-                theme="vs-dark"
-                value={editedCode}
-                onChange={(value) => setEditedCode(value)}
-                options={{
-                  fontSize: 14,
-                  minimap: { enabled: false },
-                  lineNumbers: "on",
-                  smoothScrolling: true,
-                  scrollBeyondLastLine: false,
-                  automaticLayout: true,
-                  padding: { top: 16 },
-                  cursorBlinking: "smooth",
-                }}
-              />
-            </div>
+        >
+          <div className="rounded-xl overflow-hidden bg-[#0c0c14] border border-purple-900/40">
+            <Editor
+              height="420px"
+              language="html"
+              theme="vs-dark"
+              value={editedCode}
+              onChange={(value) => setEditedCode(value)}
+              options={{
+                fontSize: 14,
+                minimap: { enabled: false },
+                lineNumbers: "on",
+                smoothScrolling: true,
+                scrollBeyondLastLine: false,
+                automaticLayout: true,
+                padding: { top: 16 },
+                cursorBlinking: "smooth",
+              }}
+            />
           </div>
+        </div>
 
-          {/* Save Button */}
-          <button
-            onClick={handleSaveCode}
-            disabled={isSaving}
-            className="
+        {/* Save Button */}
+        <button
+          onClick={handleSaveCode}
+          disabled={isSaving}
+          className="
       mt-4 px-6 py-2 rounded-xl font-semibold
       bg-green-600 hover:bg-green-700
       transition-all duration-200
       shadow-lg hover:shadow-green-500/30
       disabled:opacity-50
     "
-          >
-            {isSaving ? "Saving…" : "Save Code"}
-          </button>
-        </div>
+        >
+          {isSaving ? "Saving…" : "Save Code"}
+        </button>
+      </div>
 
 
-        {/* Preview in Iframe */}
-        <div className="mt-6">
-          <label className="text-gray-300 block mb-2 font-semibold">Preview:</label>
-          <iframe
-            ref={iframeRef}
-            title="preview"
-            className="w-full h-96 rounded-xl border border-gray-600 bg-white"
-            sandbox="allow-scripts allow-same-origin"
-          />
-        </div>
-      </main>
+      {/* Preview in Iframe */}
+      <div className="mt-6">
+        <label className="text-gray-300 block mb-2 font-semibold">Preview:</label>
+        <iframe
+          ref={iframeRef}
+          title="preview"
+          className="w-full h-96 rounded-xl border border-gray-600 bg-white"
+          sandbox="allow-scripts allow-same-origin"
+        />
+      </div>
+    </main>
 
-      <Footer />
-    </div>
-  );
+    <Footer />
+  </div>
+);
 }
