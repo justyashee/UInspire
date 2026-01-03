@@ -1,86 +1,156 @@
+
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import Header from '../../components/Header';
+import Footer from '../../components/Footer';
 
-const UserProfile = () => {
+export default function ProfilePage() {
+  const [user, setUser] = useState({
+    name: 'UI Generator User',
+    email: 'user@email.com',
+    plan: 'Free',
+  });
+
+  const [stats] = useState({
+    projects: 12,
+    generated: 48,
+  });
+
+  const preferences = [
+    { label: 'Framework', value: 'React' },
+    { label: 'Styling', value: 'Tailwind CSS' },
+    { label: 'Theme', value: 'Dark' },
+    { label: 'Code Format', value: 'JSX' },
+    { label: 'Accessibility', value: 'Enabled' },
+  ];
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0b0217] via-[#120822] to-[#020617] px-4">
-      
-      <div className="w-full max-w-3xl rounded-2xl bg-[#0b0b14]/80 backdrop-blur-xl border border-purple-500/20 shadow-2xl p-8">
-        
-        {/* Header */}
-        <div className="flex items-center gap-6 border-b border-white/10 pb-6">
-          <img
-            src="https://imgs.search.brave.com/lLASPdCMXLG7hjtQIeU4hfNZ3H_KmBYnVGo6c0_00M0/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMDkv/NzM0LzU2NC9zbWFs/bC9kZWZhdWx0LWF2/YXRhci1wcm9maWxl/LWljb24tb2Ytc29j/aWFsLW1lZGlhLXVz/ZXItdmVjdG9yLmpw/Zw"
-            alt="User Avatar"
-            width={100}
-            height={100}
-            className="rounded-full border-2 border-purple-500"
-          />
+    <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
+      <Header />
 
-          <div>
-            <h2 className="text-2xl font-semibold text-white">
-              User Profile
+      <main className="max-w-6xl mx-auto px-6 py-16 space-y-14">
+
+        {/* PROFILE HEADER */}
+        <motion.div
+          initial={{ opacity: 0, y: -25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-2xl
+                     bg-gradient-to-br from-[#0f0f1f] to-[#14142f]
+                     border border-purple-800/40 shadow-[0_0_35px_rgba(168,85,247,0.25)]"
+        >
+          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500
+                          flex items-center justify-center text-3xl font-bold">
+            {user.name[0]}
+          </div>
+
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-purple-300">
+              {user.name}
             </h2>
-            <p className="text-sm text-gray-400">
-              Manage your account details
-            </p>
-          </div>
-        </div>
+            <p className="text-gray-400">{user.email}</p>
 
-        {/* Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          
-          <div>
-            <label className="text-sm text-gray-400">Full Name</label>
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              className="mt-1 w-full rounded-lg bg-[#0f0f1a] border border-white/10 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
-            />
+            <span className="inline-block mt-3 px-4 py-1 rounded-full
+                             bg-blue-600/20 text-blue-300 text-sm">
+              {user.plan.toUpperCase()} PLAN
+            </span>
           </div>
 
-          <div>
-            <label className="text-sm text-gray-400">Email</label>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="mt-1 w-full rounded-lg bg-[#0f0f1a] border border-white/10 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
-            />
+          <div className="flex gap-8">
+            <Stat label="Projects" value={stats.projects} />
+            <Stat label="UIs Generated" value={stats.generated} />
           </div>
+        </motion.div>
 
-          <div>
-            <label className="text-sm text-gray-400">Role</label>
-            <input
-              type="text"
-              placeholder="Your role"
-              className="mt-1 w-full rounded-lg bg-[#0f0f1a] border border-white/10 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
-            />
+        {/* GENERATOR PREFERENCES */}
+        <Section title="Generator Preferences">
+          {preferences.map((pref, i) => (
+            <Preference key={i} {...pref} />
+          ))}
+        </Section>
+
+        {/* PROJECT HISTORY SHORTCUT */}
+        <Section title="Recent Projects">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[1, 2, 3].map(i => (
+              <div
+                key={i}
+                className="p-5 rounded-xl bg-black/40 border border-purple-700/40
+                           hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition"
+              >
+                <h4 className="text-purple-300 font-semibold">
+                  Generated UI #{i}
+                </h4>
+                <p className="text-gray-400 text-sm mt-2">
+                  View or regenerate this UI
+                </p>
+              </div>
+            ))}
           </div>
+        </Section>
 
-          <div>
-            <label className="text-sm text-gray-400">Location</label>
-            <input
-              type="text"
-              placeholder="Your location"
-              className="mt-1 w-full rounded-lg bg-[#0f0f1a] border border-white/10 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
-            />
+        {/* ACCOUNT ACTIONS */}
+        <Section title="Account Actions">
+          <div className="flex flex-wrap gap-4">
+            <ActionButton label="Edit Profile" />
+            <ActionButton label="Logout" />
+            <ActionButton danger label="Delete Account" />
           </div>
-        </div>
+        </Section>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-4 mt-8">
-          <button className="px-5 py-2 rounded-lg border border-white/20 text-white hover:bg-white/10 transition">
-            Cancel
-          </button>
+      </main>
 
-          <button className="px-6 py-2 rounded-lg bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-medium hover:opacity-90 transition">
-            Save Changes
-          </button>
-        </div>
-      </div>
+      <Footer />
     </div>
   );
-};
+}
 
-export default UserProfile;
+/* ---------------- COMPONENTS ---------------- */
+
+function Section({ title, children }) {
+  return (
+    <div>
+      <h3 className="text-xl font-semibold text-purple-300 mb-6">
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+}
+
+function Stat({ label, value }) {
+  return (
+    <div className="text-center">
+      <div className="text-2xl font-bold text-cyan-300">{value}</div>
+      <div className="text-gray-400 text-sm">{label}</div>
+    </div>
+  );
+}
+
+function Preference({ label, value }) {
+  return (
+    <div className="flex justify-between p-4 mb-3 rounded-xl
+                    bg-black/40 border border-purple-700/30">
+      <span className="text-gray-300">{label}</span>
+      <span className="text-purple-300 font-medium">{value}</span>
+    </div>
+  );
+}
+
+function ActionButton({ label, danger }) {
+  return (
+    <button
+      className={`px-6 py-2 rounded-xl font-medium transition
+        ${
+          danger
+            ? 'bg-red-600/20 text-red-300 hover:bg-red-600/30'
+            : 'bg-blue-600/20 text-blue-300 hover:bg-blue-600/30'
+        }`}
+    >
+      {label}
+    </button>
+  );
+}
+
