@@ -27,7 +27,7 @@ const Login = () => {
           localStorage.setItem('token', res.data.token);
           localStorage.setItem('user', JSON.stringify(res.data.user));
           toast.success('Login successful!');
-          router.push('/projectHistory');
+          router.push('/user/profile');
           resetForm();
         }
       } catch (error) {
@@ -124,6 +124,7 @@ const Login = () => {
           >
             {formik.isSubmitting ? 'Logging in...' : 'Login with Email'}
           </motion.button>
+          
           <p className="mt-4 text-sm text-gray-400 text-center">
             Don’t have an account?{" "}
             <a
