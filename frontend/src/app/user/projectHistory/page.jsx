@@ -235,10 +235,27 @@ const DashboardPage = () => {
   {error && (
     <div className="text-center text-red-400">{error}</div>
   )}
+  
 
   {/* Projects Grid */}
   {!loading && !error && (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      {/* New Project Card */}
+      <div
+        onClick={createNewProject}
+        className="h-56 cursor-pointer p-6 rounded-2xl bg-gradient-to-br from-[#071029] to-[#021026]
+                   border-2 border-dashed border-blue-600 flex flex-col items-center justify-center gap-2
+                   text-blue-300 hover:shadow-[0_12px_40px_rgba(59,130,246,0.18)] transition group"
+      >
+        <div className="text-6xl font-extralight select-none group-hover:scale-110 transition-transform">
+          +
+        </div>
+        <div className="font-semibold text-lg">New Project</div>
+        <div className="text-xs text-gray-400 mt-1 group-hover:text-blue-400 transition-colors">
+          Click to open generator
+        </div>
+      </div>
+      
       {projects.length > 0 ? (
         projects.map((project) => (
           <motion.div
@@ -292,21 +309,7 @@ const DashboardPage = () => {
         </div>
       )}
 
-      {/* New Project Card */}
-      <div
-        onClick={createNewProject}
-        className="h-56 cursor-pointer p-6 rounded-2xl bg-gradient-to-br from-[#071029] to-[#021026]
-                   border-2 border-dashed border-blue-600 flex flex-col items-center justify-center gap-2
-                   text-blue-300 hover:shadow-[0_12px_40px_rgba(59,130,246,0.18)] transition group"
-      >
-        <div className="text-6xl font-extralight select-none group-hover:scale-110 transition-transform">
-          +
-        </div>
-        <div className="font-semibold text-lg">New Project</div>
-        <div className="text-xs text-gray-400 mt-1 group-hover:text-blue-400 transition-colors">
-          Click to open generator
-        </div>
-      </div>
+      
     </div>
   )}
 

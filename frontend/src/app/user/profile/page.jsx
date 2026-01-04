@@ -1,8 +1,8 @@
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 
@@ -13,14 +13,6 @@ export default function ProfilePage() {
     projects: 12,
     generated: 48,
   });
-
-  const preferences = [
-    { label: 'Framework', value: 'React' },
-    { label: 'Styling', value: 'Tailwind CSS' },
-    { label: 'Theme', value: 'Dark' },
-    { label: 'Code Format', value: 'JSX' },
-    { label: 'Accessibility', value: 'Enabled' },
-  ];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,7 +25,7 @@ export default function ProfilePage() {
         });
         const userData = await response.json();
         console.log(userData);
-        
+
         setUser(userData);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -43,7 +35,7 @@ export default function ProfilePage() {
     fetchUser();
   }, []);
 
-  if(!user) {
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center
                       bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
@@ -91,13 +83,6 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* GENERATOR PREFERENCES */}
-        <Section title="Generator Preferences">
-          {preferences.map((pref, i) => (
-            <Preference key={i} {...pref} />
-          ))}
-        </Section>
-
         {/* PROJECT HISTORY SHORTCUT */}
         <Section title="Recent Projects">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -116,12 +101,23 @@ export default function ProfilePage() {
               </div>
             ))}
           </div>
+          <div className="mt-6">
+            <Link href="/user/projectHistory">
+              <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl 
+                               font-semibold transition shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+                View All Projects
+              </button>
+            </Link>
+          </div>
         </Section>
 
         {/* ACCOUNT ACTIONS */}
         <Section title="Account Actions">
           <div className="flex flex-wrap gap-4">
-            <ActionButton label="Edit Profile" />
+            <Link href="/user/editprofile">
+              <ActionButton label="Edit Profile" />
+            </Link>
+
             <ActionButton label="Logout" />
             <ActionButton danger label="Delete Account" />
           </div>
@@ -170,10 +166,9 @@ function ActionButton({ label, danger }) {
   return (
     <button
       className={`px-6 py-2 rounded-xl font-medium transition
-        ${
-          danger
-            ? 'bg-red-600/20 text-red-300 hover:bg-red-600/30'
-            : 'bg-blue-600/20 text-blue-300 hover:bg-blue-600/30'
+        ${danger
+          ? 'bg-red-600/20 text-red-300 hover:bg-red-600/30'
+          : 'bg-blue-600/20 text-blue-300 hover:bg-blue-600/30'
         }`}
     >
       {label}
