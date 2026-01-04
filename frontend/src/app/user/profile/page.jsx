@@ -3,15 +3,11 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
 
 export default function ProfilePage() {
-  const [user, setUser] = useState({
-    name: 'UI Generator User',
-    email: 'user@email.com',
-    plan: 'Free',
-  });
+  const [user, setUser] = useState(null);
 
   const [stats] = useState({
     projects: 12,
@@ -25,6 +21,37 @@ export default function ProfilePage() {
     { label: 'Code Format', value: 'JSX' },
     { label: 'Accessibility', value: 'Enabled' },
   ];
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getuser`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        const userData = await response.json();
+        console.log(userData);
+        
+        setUser(userData);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if(!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center
+                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
+                      text-white">
+        <p>Loading profile...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
@@ -43,7 +70,7 @@ export default function ProfilePage() {
         >
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500
                           flex items-center justify-center text-3xl font-bold">
-            {user.name[0]}
+            {user.name}
           </div>
 
           <div className="flex-1">
@@ -52,10 +79,10 @@ export default function ProfilePage() {
             </h2>
             <p className="text-gray-400">{user.email}</p>
 
-            <span className="inline-block mt-3 px-4 py-1 rounded-full
+            {/* <span className="inline-block mt-3 px-4 py-1 rounded-full
                              bg-blue-600/20 text-blue-300 text-sm">
               {user.plan.toUpperCase()} PLAN
-            </span>
+            </span> */}
           </div>
 
           <div className="flex gap-8">

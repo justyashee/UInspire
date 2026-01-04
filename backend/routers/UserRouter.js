@@ -4,6 +4,7 @@ const { model } = require('mongoose');
 const router = express.Router();
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
+const authenticateToken = require('../middleware/authenticateToken');
 
 
 router.post('/add', (req, res) => {
@@ -31,17 +32,6 @@ router.get('/getall', (req, res) => {
     });
 });
 
-//url params
-router.get('/getbycity/:city', (req, res) => {
-  console.log(req.params.city);
-  Model.find({ city: req.params.city }) //to match the city from params
-    .then((result) => {
-      res.status(200).json(result);
-    }).catch((err) => {
-      console.log(err);
-      res.status(500).json(err);
-    });
-});
 
 router.get('/getbyemail/:email', (req, res) => {
   console.log(req.params.email);
@@ -55,6 +45,16 @@ router.get('/getbyemail/:email', (req, res) => {
 });
 router.get('/getbyid/:id', (req, res) => {
   Model.findById(req.params.id)
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(result);
+    });
+});
+
+router.get('/getuser', authenticateToken, (req, res) => {
+  Model.findById(req.user._id)
     .then((result) => {
       res.status(200).json(result);
     }).catch((err) => {

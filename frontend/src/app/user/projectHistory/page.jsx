@@ -75,8 +75,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import Header from '../../components/Header';
-import Footer from '../../components/Footer';
+import Header from '../../../components/Header';
+import Footer from '../../../components/Footer';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
