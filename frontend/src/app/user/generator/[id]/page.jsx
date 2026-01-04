@@ -42,7 +42,7 @@ export default function GeneratorPage() {
   setEditedCode(response.data.code || '// Generated code will appear here...');
 } catch (err) {
   console.error(err);
-  setError('Failed to load project data.');
+  setError('');
 } finally {
   setIsLoadingData(false);
 }
@@ -157,6 +157,12 @@ return (
       <textarea
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleGenerate();
+          }
+        }}
         className="w-full p-4 bg-[#0f0f1a] rounded-lg text-white placeholder-gray-500"
         placeholder="Describe your UI here..."
         rows="4"

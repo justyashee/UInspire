@@ -14,6 +14,8 @@ export default function EditProfilePage() {
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -55,6 +57,8 @@ export default function EditProfilePage() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setMessage('');
+    setError('');
 
     try {
       const formData = new FormData();
@@ -64,7 +68,7 @@ export default function EditProfilePage() {
         formData.append('profileImage', profileImage);
       }
 
-      await fetch(
+      const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/user/updateuser`,
         {
           method: 'PUT',
@@ -75,9 +79,17 @@ export default function EditProfilePage() {
         }
       );
 
-      router.push('/user/profile');
+      if (!res.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      setMessage('Profile updated successfully!');
+      setTimeout(() => {
+        router.push('/user/profile');
+      }, 1500);
     } catch (err) {
       console.error('Update failed', err);
+      setError(err.message || 'Failed to update profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -131,7 +143,9 @@ export default function EditProfilePage() {
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                <span className="text-purple-400 font-bold hover:underline">+</span>
+                <span className="text-purple-400 font-bold hover:underline">
+                  {previewImage ? 'Change Profile Picture' : 'Upload Profile Picture'}
+                </span>
               </label>
             </div>
 
@@ -160,12 +174,25 @@ export default function EditProfilePage() {
             </div>
 
             <div className="flex gap-4 pt-4">
+              {message && (
+                <div className="w-full p-3 bg-green-600/20 text-green-300 rounded-xl text-sm">
+                  ✓ {message}
+                </div>
+              )}
+              {error && (
+                <div className="w-full p-3 bg-red-600/20 text-red-300 rounded-xl text-sm">
+                  ✗ {error}
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-4 pt-4">
               <button
                 type="submit"
                 disabled={loading}
                 className="px-6 py-3 bg-purple-600 hover:bg-purple-700
                 rounded-xl font-semibold transition
-                shadow-[0_0_25px_rgba(168,85,247,0.5)]"
+                shadow-[0_0_25px_rgba(168,85,247,0.5)] disabled:opacity-50"
               >
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
