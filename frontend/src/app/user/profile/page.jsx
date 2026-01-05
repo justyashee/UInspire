@@ -8,34 +8,85 @@ import Footer from '../../../components/Footer';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
-
-  const [stats] = useState({
-    projects: 12,
-    generated: 48,
-  });
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getuser`, {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError('Please login first');
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user data
+        const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getuser`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
           },
         });
-        const userData = await response.json();
-        console.log(userData);
 
+        if (!userResponse.ok) {
+          throw new Error(`User API failed: ${userResponse.status}`);
+        }
+
+        const userData = await userResponse.json();
         setUser(userData);
+
+        // Fetch projects
+        const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!projectsResponse.ok) {
+          console.warn(`Projects API failed: ${projectsResponse.status}, using empty array`);
+          setProjects([]);
+          setLoading(false);
+          return;
+        }
+
+        const projectsData = await projectsResponse.json();
+        const projectsList = Array.isArray(projectsData) ? projectsData : projectsData.projects || [];
+        setProjects(projectsList.slice(0, 3));
+        setLoading(false);
+
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('Error fetching data:', error);
+        setError(error.message);
+        setLoading(false);
       }
     };
 
-    fetchUser();
+    fetchData();
   }, []);
 
-  if (!user) {
+  if (error && !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center
+                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
+                      text-white">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">Error: {error}</p>
+          <Link href="/login">
+            <button className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">
+              Go to Login
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center
                       bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
@@ -45,11 +96,21 @@ export default function ProfilePage() {
     );
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center
+                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
+                      text-white">
+        <p>No user data found</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
       <Header />
 
-      <main className="max-w-6xl mx-auto px-6 py-16 space-y-14">
+      <main className="max-w-6xl mx-auto px-6 py-16 space-y-14 pt-24">
 
         {/* PROFILE HEADER */}
         <motion.div
@@ -62,7 +123,7 @@ export default function ProfilePage() {
         >
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500
                           flex items-center justify-center text-3xl font-bold">
-            {user.name}
+            {user.name?.charAt(0).toUpperCase()}
           </div>
 
           <div className="flex-1">
@@ -70,45 +131,91 @@ export default function ProfilePage() {
               {user.name}
             </h2>
             <p className="text-gray-400">{user.email}</p>
-
-            {/* <span className="inline-block mt-3 px-4 py-1 rounded-full
-                             bg-blue-600/20 text-blue-300 text-sm">
-              {user.plan.toUpperCase()} PLAN
-            </span> */}
           </div>
 
           <div className="flex gap-8">
-            <Stat label="Projects" value={stats.projects} />
-            <Stat label="UIs Generated" value={stats.generated} />
+            <Stat label="Projects" value={projects.length} />
+            <Stat label="UIs Generated" value={projects.length * 2} />
           </div>
         </motion.div>
 
         {/* PROJECT HISTORY SHORTCUT */}
         <Section title="Recent Projects">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className="p-5 rounded-xl bg-black/40 border border-purple-700/40
-                           hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition"
-              >
-                <h4 className="text-purple-300 font-semibold">
-                  Generated UI #{i}
-                </h4>
-                <p className="text-gray-400 text-sm mt-2">
-                  View or regenerate this UI
-                </p>
+          {projects.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {projects.map((project, index) => (
+                  <Link key={project._id || index} href={`/user/generator/${project._id}`}>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      whileHover={{ y: -8 }}
+                      className="p-5 rounded-xl bg-black/40 border border-purple-700/40
+                                 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition cursor-pointer
+                                 h-full block">
+                      {/* Project Code Preview */}
+                      <div className="w-full h-48 mb-4 bg-black/80 rounded-lg overflow-hidden
+                                     border border-purple-700/30 flex items-center justify-center
+                                     relative group">
+                        {project.codeImage ? (
+                          <img 
+                            src={project.codeImage} 
+                            alt={project.name} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : project.preview ? (
+                          <img 
+                            src={project.preview} 
+                            alt={project.name} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-purple-600/30 to-blue-600/30
+                                         flex flex-col items-center justify-center text-gray-400 p-4 text-center">
+                            <div className="text-4xl mb-2">🎨</div>
+                            <span className="text-sm">No Preview Available</span>
+                          </div>
+                        )}
+                      </div>
+
+                      <h4 className="text-purple-300 font-semibold truncate">
+                        {project.name || 'Untitled Project'}
+                      </h4>
+                      <p className="text-gray-400 text-sm mt-2 line-clamp-2">
+                        {project.description || 'View or regenerate this UI'}
+                      </p>
+                      <div className="flex justify-between items-center mt-4">
+                        <p className="text-gray-500 text-xs">
+                          {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}
+                        </p>
+                        <span className="text-purple-400 text-xs font-semibold">
+                          View →
+                        </span>
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="mt-6">
-            <Link href="/user/projectHistory">
-              <button className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl 
-                               font-semibold transition shadow-[0_0_25px_rgba(168,85,247,0.5)]">
-                View All Projects
-              </button>
-            </Link>
-          </div>
+              <div className="mt-8 flex justify-center">
+                <Link href="/user/projectHistory">
+                  <button className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl 
+                                   font-semibold transition shadow-[0_0_25px_rgba(168,85,247,0.5)]
+                                   hover:shadow-[0_0_35px_rgba(168,85,247,0.7)]">
+                    View All Projects
+                  </button>
+                </Link>
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-400">No projects yet. Start creating one now!</p>
+          )}
         </Section>
 
         {/* ACCOUNT ACTIONS */}
