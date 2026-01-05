@@ -114,7 +114,7 @@ const DashboardPage = () => {
     })
       .then((res) => {
         console.log(res.data);
-        router.push(`/generator/${res.data._id}`);
+        router.push(`/user/generator/${res.data._id}`);
         // setProjects((prev) => [...prev, res.data]);
       })
       .catch((err) => {
@@ -286,7 +286,7 @@ const DashboardPage = () => {
             {/* Buttons */}
             <div className="flex items-center justify-between mt-auto pt-4 border-t border-purple-700/40">
               <Link
-                href={`/generator/${project._id}`}
+                href={`/user/generator/${project._id}`}
                 className="px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 
                            hover:bg-blue-600/30 transition font-medium"
               >
