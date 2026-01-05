@@ -14,6 +14,7 @@ export default function GeneratorPage() {
   const [editedCode, setEditedCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
   const [isLoadingData, setIsLoadingData] = useState(false);
@@ -126,6 +127,26 @@ setTimeout(() => setSuccessMessage(''), 3000);
 } finally {
   setIsSaving(false);
 }
+  };
+
+const handleCopyCode = async () => {
+    if (!editedCode.trim()) {
+      setError('Code cannot be empty.');
+      return;
+    }
+  
+    try {
+      await navigator.clipboard.writeText(editedCode);
+      setIsCopied(true);
+      setSuccessMessage('Code copied to clipboard!');
+      setTimeout(() => {
+        setIsCopied(false);
+        setSuccessMessage('');
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to copy code.');
+    }
   };
 
 const resetAll = () => {
@@ -244,17 +265,15 @@ return (
 
         {/* Save Button */}
         <button
-          onClick={handleSaveCode}
-          disabled={isSaving}
+          onClick={handleCopyCode}
           className="
       mt-4 px-6 py-2 rounded-xl font-semibold
-      bg-green-600 hover:bg-green-700
+      bg-blue-600 hover:bg-blue-700
       transition-all duration-200
-      shadow-lg hover:shadow-green-500/30
-      disabled:opacity-50
+      shadow-lg hover:shadow-blue-500/30
     "
         >
-          {isSaving ? "Saving…" : "Save Code"}
+          {isCopied ? "Copied!" : "Copy Code"}
         </button>
       </div>
 
