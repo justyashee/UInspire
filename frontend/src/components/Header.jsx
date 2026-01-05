@@ -44,6 +44,16 @@ const Header = () => {
                 {isAuthenticated ? (
                   <>
                     <li>
+                      <Link href="/user/projectHistory" className="hover:text-purple-600 transition-colors">
+                        Projects
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/user/generator\[id]" className="hover:text-purple-600 transition-colors">
+                        Generator
+                      </Link>
+                    </li>
+                    <li>
                       <Link href="/user/profile" className="hover:text-purple-600 transition-colors">
                         {user?.name || 'Profile'}
                       </Link>
