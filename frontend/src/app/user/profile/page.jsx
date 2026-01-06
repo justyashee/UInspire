@@ -39,7 +39,7 @@ export default function ProfilePage() {
         setUser(userData);
 
         // Fetch projects
-        const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`, {
+        const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/getbyuser`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -47,14 +47,17 @@ export default function ProfilePage() {
           },
         });
 
+        
+        
         if (!projectsResponse.ok) {
           console.warn(`Projects API failed: ${projectsResponse.status}, using empty array`);
           setProjects([]);
           setLoading(false);
           return;
         }
-
+        
         const projectsData = await projectsResponse.json();
+        console.log(projectsData);
         const projectsList = Array.isArray(projectsData) ? projectsData : projectsData.projects || [];
         setProjects(projectsList.slice(0, 3));
         setLoading(false);
@@ -135,7 +138,7 @@ export default function ProfilePage() {
 
           <div className="flex gap-8">
             <Stat label="Projects" value={projects.length} />
-            <Stat label="UIs Generated" value={projects.length * 2} />
+            {/* <Stat label="UIs Generated" value={projects.length * 2} /> */}
           </div>
         </motion.div>
 
