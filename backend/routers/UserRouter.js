@@ -1,6 +1,5 @@
 const express = require('express');
 const Model = require('../models/UserModel');
-const { model } = require('mongoose');
 const router = express.Router();
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
@@ -43,6 +42,8 @@ router.get('/getbyemail/:email', (req, res) => {
       res.status(500).json(err);
     });
 });
+
+
 router.get('/getbyid/:id', (req, res) => {
   Model.findById(req.params.id)
     .then((result) => {
@@ -73,8 +74,10 @@ router.delete('/delete/:id', (req, res) => {
     });
 });
 
-router.put('/update/:id', (req, res) => {
-  Model.findByIdAndUpdate(req.params.id, req.body, { new: true })  //new:true to return the updated document at first send
+router.put('/update', authenticateToken, (req, res) => {
+  console.log(req.body);
+
+  Model.findByIdAndUpdate(req.user._id, req.body, { new: true })  //new:true to return the updated document at first send
     .then((result) => {
       res.status(200).json(result);
     }).catch((err) => {
@@ -117,3 +120,80 @@ router.post('/authenticate', (req, res) => {
 });
 
 module.exports = router;
+// const express = require('express');
+// const User = require('../models/UserModel');
+// const jwt = require('jsonwebtoken');
+// const authenticateToken = require('../middleware/authenticateToken');
+// const upload = require('../middleware/multer');
+
+// const router = express.Router();
+
+// /* REGISTER */
+// router.post('/add', async (req, res) => {
+//   try {
+//     const user = await new User(req.body).save();
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// /* LOGIN */
+// router.post('/authenticate', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   const user = await User.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: 'Invalid credentials' });
+//   }
+
+//   const token = jwt.sign(
+//     { _id: user._id, name: user.name },
+//     process.env.JWT_SECRET,
+//     { expiresIn: '1h' }
+//   );
+
+//   res.status(200).json({ token });
+// });
+
+// /* GET LOGGED-IN USER */
+// router.get('/getuser', authenticateToken, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user._id).select('-password');
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// /* ✅ UPDATE PROFILE (NO :id — USE JWT) */
+// router.put(
+//   '/update-profile',
+//   authenticateToken,
+//   upload.single('profileImage'),
+//   async (req, res) => {
+//     try {
+//       const updateData = {
+//         name: req.body.name,
+//         email: req.body.email
+//       };
+
+//       if (req.file) {
+//         updateData.profileImage = req.file.path; // Cloudinary URL
+//       }
+
+//       const updatedUser = await User.findByIdAndUpdate(
+//         req.user._id,
+//         updateData,
+//         { new: true }
+//       );
+
+//       res.status(200).json(updatedUser);
+//     } catch (err) {
+//       res.status(500).json(err);
+//     }
+//   }
+// );
+
+// module.exports = router;
+

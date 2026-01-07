@@ -2,14 +2,23 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAppContext } from '@/context/AppContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 const Header = () => {
   const { isAuthenticated, user, logout, loading } = useAppContext();
   const router = useRouter();
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
+  };
+
+  const isActive = (href) => pathname === href;
+
+  const getLinkClass = (href) => {
+    const baseClass = 'transition-colors';
+    const activeClass = isActive(href) ? 'text-purple-600 font-semibold' : 'hover:text-purple-600';
+    return `${baseClass} ${activeClass}`;
   };
 
   return (
@@ -17,24 +26,26 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
         <Link
           href="/"
-          className="text-3xl font-bold text-purple-600 hover:text-purple-800 transition-colors cursor-pointer"
+          className={`text-3xl font-bold ${
+            isActive('/') ? 'text-purple-600' : 'text-purple-600 hover:text-purple-800'
+          } transition-colors cursor-pointer`}
         >
           UI Generator
         </Link>
         <nav>
           <ul className="flex gap-8 text-gray-600 font-medium items-center">
             <li>
-              <Link href="/" className="hover:text-purple-600 transition-colors">
+              <Link href="/" className={getLinkClass('/')}>
                 Home
               </Link>
             </li>
             <li>
-              <Link href="/about" className="hover:text-purple-600 transition-colors">
+              <Link href="/about" className={getLinkClass('/about')}>
                 About Us
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-purple-600 transition-colors">
+              <Link href="/contact" className={getLinkClass('/contact')}>
                 Contact Us
               </Link>
             </li>
@@ -44,17 +55,13 @@ const Header = () => {
                 {isAuthenticated ? (
                   <>
                     <li>
-                      <Link href="/user/projectHistory" className="hover:text-purple-600 transition-colors">
+                      <Link href="/user/projectHistory" className={getLinkClass('/user/projectHistory')}>
                         Projects
                       </Link>
                     </li>
+                   
                     <li>
-                      <Link href="/user/generator\[id]" className="hover:text-purple-600 transition-colors">
-                        Generator
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/user/profile" className="hover:text-purple-600 transition-colors">
+                      <Link href="/user/profile" className={getLinkClass('/user/profile')}>
                         {user?.name || 'Profile'}
                       </Link>
                     </li>
@@ -70,14 +77,16 @@ const Header = () => {
                 ) : (
                   <>
                     <li>
-                      <Link href="/login" className="hover:text-purple-600 transition-colors">
+                      <Link href="/login" className={getLinkClass('/login')}>
                         Login
                       </Link>
                     </li>
                     <li>
                       <Link
                         href="/signup"
-                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+                        className={`${
+                          isActive('/signup') ? 'bg-purple-700' : 'bg-purple-600 hover:bg-purple-700'
+                        } text-white px-4 py-2 rounded-lg transition-colors`}
                       >
                         SignUp
                       </Link>

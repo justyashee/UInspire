@@ -39,11 +39,13 @@ export const AppContextProvider = ({ children }) => {
   // Fetch user data using token
   const fetchUserData = async (authToken) => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getusery`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getuser`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (response.ok) {
         const userData = await response.json();
+        console.log('user data fetched:', userData);
+        
         setUser(userData);
       } else {
         throw new Error('Failed to fetch user data');
