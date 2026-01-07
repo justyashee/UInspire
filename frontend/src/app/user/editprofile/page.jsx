@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 
@@ -12,10 +14,39 @@ export default function EditProfilePage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [profileImage, setProfileImage] = useState(null);
+  const [imageUrl, setImageUrl] = useState('');
   const [previewImage, setPreviewImage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  const uploadToCloudinary = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploading(true);
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('upload_preset', 'uiinspire');
+    fd.append('cloud_name', 'dxnhq2zvs');
+
+    axios.post('https://api.cloudinary.com/v1_1/dxnhq2zvs/image/upload', fd)
+      .then((result) => {
+        toast.success('Image uploaded successfully');
+        console.log(result.data);
+        setProfileImage(file);
+        setImageUrl(result.data.url);
+        setPreviewImage(result.data.url);
+      })
+      .catch((err) => {
+        toast.error('Error while uploading image');
+        console.log(err);
+      })
+      .finally(() => {
+        setUploading(false);
+      });
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -33,26 +64,16 @@ export default function EditProfilePage() {
         setUser(data);
         setName(data.name);
         setEmail(data.email);
+        setImageUrl(data.profileImage || '');
         setPreviewImage(data.profileImage || '');
       } catch (err) {
         console.error(err);
+        setError('Failed to fetch user data');
       }
     };
 
     fetchUser();
   }, []);
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setProfileImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -61,21 +82,27 @@ export default function EditProfilePage() {
     setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('email', email);
-      if (profileImage) {
-        formData.append('profileImage', profileImage);
+      if (!name || !email) {
+        setError('Please fill in all fields');
+        setLoading(false);
+        return;
       }
 
+      const updateData = {
+        name,
+        email,
+        profileImage: imageUrl, // Use the Cloudinary URL
+      };
+
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/user/updateuser`,
+        `${process.env.NEXT_PUBLIC_API_URL}/user/update`,
         {
           method: 'PUT',
           headers: {
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
-          body: formData,
+          body: JSON.stringify(updateData),
         }
       );
 
@@ -83,13 +110,19 @@ export default function EditProfilePage() {
         throw new Error('Failed to update profile');
       }
 
+      const data = await res.json();
+      console.log('Profile updated:', data);
+
+      toast.success('Profile updated successfully!');
       setMessage('Profile updated successfully!');
-      setTimeout(() => {
-        router.push('/user/profile');
-      }, 1500);
+
+      // setTimeout(() => {
+      //   router.push('/user/profile');
+      // }, 1500);
     } catch (err) {
       console.error('Update failed', err);
       setError(err.message || 'Failed to update profile. Please try again.');
+      toast.error(err.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }
@@ -108,7 +141,7 @@ export default function EditProfilePage() {
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
       <Header />
 
-      <main className="max-w-4xl mx-auto px-6 py-16">
+      <main className="max-w-4xl mx-auto px-6 py-16 pt-24">
 
         <motion.div
           initial={{ opacity: 0, y: -25 }}
@@ -140,13 +173,20 @@ export default function EditProfilePage() {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={handleImageChange}
+                  onChange={uploadToCloudinary}
+                  disabled={uploading}
                   className="hidden"
                 />
-                <span className="text-purple-400 font-bold hover:underline">
-                  {previewImage ? 'Change Profile Picture' : 'Upload Profile Picture'}
+                <span className={`text-purple-400 font-bold hover:underline block text-center ${uploading ? 'opacity-50' : ''}`}>
+                  {uploading ? 'Uploading...' : previewImage ? 'Change Profile Picture' : 'Upload Profile Picture'}
                 </span>
               </label>
+
+              {imageUrl && (
+                <p className="text-xs text-gray-400 text-center break-all max-w-xs">
+                  Image URL: {imageUrl}
+                </p>
+              )}
             </div>
 
             <div>
@@ -155,9 +195,11 @@ export default function EditProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                disabled={loading}
                 className="w-full px-4 py-3 rounded-xl bg-black/40
                 border border-purple-700/40 text-white
-                focus:outline-none focus:ring-2 focus:ring-purple-600"
+                focus:outline-none focus:ring-2 focus:ring-purple-600
+                disabled:opacity-50"
               />
             </div>
 
@@ -167,9 +209,11 @@ export default function EditProfilePage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                disabled={loading}
                 className="w-full px-4 py-3 rounded-xl bg-black/40
                 border border-purple-700/40 text-white
-                focus:outline-none focus:ring-2 focus:ring-purple-600"
+                focus:outline-none focus:ring-2 focus:ring-purple-600
+                disabled:opacity-50"
               />
             </div>
 
@@ -189,7 +233,7 @@ export default function EditProfilePage() {
             <div className="flex gap-4 pt-4">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || uploading}
                 className="px-6 py-3 bg-purple-600 hover:bg-purple-700
                 rounded-xl font-semibold transition
                 shadow-[0_0_25px_rgba(168,85,247,0.5)] disabled:opacity-50"
@@ -200,8 +244,9 @@ export default function EditProfilePage() {
               <button
                 type="button"
                 onClick={() => router.back()}
+                disabled={loading || uploading}
                 className="px-6 py-3 bg-blue-600/20 text-blue-300
-                hover:bg-blue-600/30 rounded-xl transition"
+                hover:bg-blue-600/30 rounded-xl transition disabled:opacity-50"
               >
                 Cancel
               </button>

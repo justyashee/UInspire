@@ -12,6 +12,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,6 +38,7 @@ export default function ProfilePage() {
 
         const userData = await userResponse.json();
         setUser(userData);
+        console.log(userData);
 
         // Fetch projects
         const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/getbyuser`, {
@@ -47,19 +49,19 @@ export default function ProfilePage() {
           },
         });
 
-        
-        
+
+
         if (!projectsResponse.ok) {
           console.warn(`Projects API failed: ${projectsResponse.status}, using empty array`);
           setProjects([]);
           setLoading(false);
           return;
         }
-        
+
         const projectsData = await projectsResponse.json();
         console.log(projectsData);
         const projectsList = Array.isArray(projectsData) ? projectsData : projectsData.projects || [];
-        setProjects(projectsList.slice(0, 3));
+        setProjects(projectsList);
         setLoading(false);
 
       } catch (error) {
@@ -125,8 +127,13 @@ export default function ProfilePage() {
                      border border-purple-800/40 shadow-[0_0_35px_rgba(168,85,247,0.25)]"
         >
           <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500
-                          flex items-center justify-center text-3xl font-bold">
-            {user.name?.charAt(0).toUpperCase()}
+                          flex items-center justify-center text-3xl font-bold overflow-hidden
+                          border-2 border-purple-600 shadow-[0_0_25px_rgba(168,85,247,0.5)]">
+            {user.profileImage ? (
+              <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
+            ) : (
+              user.name?.charAt(0).toUpperCase()
+            )}
           </div>
 
           <div className="flex-1">
@@ -138,7 +145,6 @@ export default function ProfilePage() {
 
           <div className="flex gap-8">
             <Stat label="Projects" value={projects.length} />
-            {/* <Stat label="UIs Generated" value={projects.length * 2} /> */}
           </div>
         </motion.div>
 
@@ -149,7 +155,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {projects.map((project, index) => (
                   <Link key={project._id || index} href={`/user/generator/${project._id}`}>
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -162,18 +168,18 @@ export default function ProfilePage() {
                                      border border-purple-700/30 flex items-center justify-center
                                      relative group">
                         {project.codeImage ? (
-                          <img 
-                            src={project.codeImage} 
-                            alt={project.name} 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                          <img
+                            src={project.codeImage}
+                            alt={project.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.target.style.display = 'none';
                             }}
                           />
                         ) : project.preview ? (
-                          <img 
-                            src={project.preview} 
-                            alt={project.name} 
+                          <img
+                            src={project.preview}
+                            alt={project.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.target.style.display = 'none';

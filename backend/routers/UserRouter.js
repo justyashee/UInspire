@@ -1,196 +1,199 @@
-// const express = require('express');
-// const Model = require('../models/UserModel');
-// const { model } = require('mongoose');
-// const router = express.Router();
-// require('dotenv').config();
-// const jwt = require('jsonwebtoken');
-// const authenticateToken = require('../middleware/authenticateToken');
-
-
-// router.post('/add', (req, res) => {
-//   console.log(req.body);
-//   // Here you would typically handle the request to add a user
-
-
-//   new Model(req.body).save()
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json({ err });
-//     });
-
-// });
-// router.get('/getall', (req, res) => {
-//   Model.find()
-//     .then((result) => {
-//       res.status(200).json(result);
-
-//     }).catch((err) => {
-//       res.status(500).json(err);
-
-//     });
-// });
-
-
-// router.get('/getbyemail/:email', (req, res) => {
-//   console.log(req.params.email);
-//   Model.findOne({ email: req.params.email }) //to find the first matching email from params and responds with object and not array and also in case of synatx error it responds with null
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json(err);
-//     });
-// });
-// router.get('/getbyid/:id', (req, res) => {
-//   Model.findById(req.params.id)
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json(result);
-//     });
-// });
-
-// router.get('/getuser', authenticateToken, (req, res) => {
-//   Model.findById(req.user._id)
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json(result);
-//     });
-// });
-
-// router.delete('/delete/:id', (req, res) => {
-//   Model.findByIdAndDelete(req.params.id)
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json(result);
-//     });
-// });
-
-// router.put('/update/:id', (req, res) => {
-//   Model.findByIdAndUpdate(req.params.id, req.body, { new: true })  //new:true to return the updated document at first send
-//     .then((result) => {
-//       res.status(200).json(result);
-//     }).catch((err) => {
-//       console.log(err);
-//       res.status(500).json(result);
-//     });
-// });
-
-
-// router.post('/authenticate', (req, res) => {
-//   const { email, password } = req.body;
-//   Model.findOne({ email, password })
-//     .then((result) => {
-//       if (result) {
-//         //create token
-//         const { _id, name } = result;
-//         jwt.sign(
-//           { _id, name },
-//           process.env.JWT_SECRET,
-//           { expiresIn: '1h' },
-//           //h=hours, m=minutes, d=days, nothing for seconds
-//           (err, token) => {
-//             if (err) {
-//               console.log(err);
-//               res.status(500).json(err);
-//             } else {
-//               res.status(200).json({ token });
-//             }
-//           }
-//         );
-
-//       } else {
-//         res.status(401).json({ message: 'Invalid credentials' });
-//       }
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(500).json(err);
-//     });
-// });
-
-// module.exports = router;
 const express = require('express');
-const User = require('../models/UserModel');
+const Model = require('../models/UserModel');
+const router = express.Router();
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const authenticateToken = require('../middleware/authenticateToken');
-const upload = require('../middleware/multer');
 
-const router = express.Router();
 
-/* REGISTER */
-router.post('/add', async (req, res) => {
-  try {
-    const user = await new User(req.body).save();
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json(err);
-  }
+router.post('/add', (req, res) => {
+  console.log(req.body);
+  // Here you would typically handle the request to add a user
+
+
+  new Model(req.body).save()
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json({ err });
+    });
+
 });
+router.get('/getall', (req, res) => {
+  Model.find()
+    .then((result) => {
+      res.status(200).json(result);
 
-/* LOGIN */
-router.post('/authenticate', async (req, res) => {
-  const { email, password } = req.body;
-
-  const user = await User.findOne({ email, password });
-  if (!user) {
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-
-  const token = jwt.sign(
-    { _id: user._id, name: user.name },
-    process.env.JWT_SECRET,
-    { expiresIn: '1h' }
-  );
-
-  res.status(200).json({ token });
-});
-
-/* GET LOGGED-IN USER */
-router.get('/getuser', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findById(req.user._id).select('-password');
-    res.status(200).json(user);
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
-/* ✅ UPDATE PROFILE (NO :id — USE JWT) */
-router.put(
-  '/update-profile',
-  authenticateToken,
-  upload.single('profileImage'),
-  async (req, res) => {
-    try {
-      const updateData = {
-        name: req.body.name,
-        email: req.body.email
-      };
-
-      if (req.file) {
-        updateData.profileImage = req.file.path; // Cloudinary URL
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(
-        req.user._id,
-        updateData,
-        { new: true }
-      );
-
-      res.status(200).json(updatedUser);
-    } catch (err) {
+    }).catch((err) => {
       res.status(500).json(err);
-    }
-  }
-);
+
+    });
+});
+
+
+router.get('/getbyemail/:email', (req, res) => {
+  console.log(req.params.email);
+  Model.findOne({ email: req.params.email }) //to find the first matching email from params and responds with object and not array and also in case of synatx error it responds with null
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
+
+
+router.get('/getbyid/:id', (req, res) => {
+  Model.findById(req.params.id)
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(result);
+    });
+});
+
+router.get('/getuser', authenticateToken, (req, res) => {
+  Model.findById(req.user._id)
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(result);
+    });
+});
+
+router.delete('/delete/:id', (req, res) => {
+  Model.findByIdAndDelete(req.params.id)
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(result);
+    });
+});
+
+router.put('/update', authenticateToken, (req, res) => {
+  console.log(req.body);
+
+  Model.findByIdAndUpdate(req.user._id, req.body, { new: true })  //new:true to return the updated document at first send
+    .then((result) => {
+      res.status(200).json(result);
+    }).catch((err) => {
+      console.log(err);
+      res.status(500).json(result);
+    });
+});
+
+
+router.post('/authenticate', (req, res) => {
+  const { email, password } = req.body;
+  Model.findOne({ email, password })
+    .then((result) => {
+      if (result) {
+        //create token
+        const { _id, name } = result;
+        jwt.sign(
+          { _id, name },
+          process.env.JWT_SECRET,
+          { expiresIn: '1h' },
+          //h=hours, m=minutes, d=days, nothing for seconds
+          (err, token) => {
+            if (err) {
+              console.log(err);
+              res.status(500).json(err);
+            } else {
+              res.status(200).json({ token });
+            }
+          }
+        );
+
+      } else {
+        res.status(401).json({ message: 'Invalid credentials' });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(500).json(err);
+    });
+});
 
 module.exports = router;
+// const express = require('express');
+// const User = require('../models/UserModel');
+// const jwt = require('jsonwebtoken');
+// const authenticateToken = require('../middleware/authenticateToken');
+// const upload = require('../middleware/multer');
+
+// const router = express.Router();
+
+// /* REGISTER */
+// router.post('/add', async (req, res) => {
+//   try {
+//     const user = await new User(req.body).save();
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// /* LOGIN */
+// router.post('/authenticate', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   const user = await User.findOne({ email, password });
+//   if (!user) {
+//     return res.status(401).json({ message: 'Invalid credentials' });
+//   }
+
+//   const token = jwt.sign(
+//     { _id: user._id, name: user.name },
+//     process.env.JWT_SECRET,
+//     { expiresIn: '1h' }
+//   );
+
+//   res.status(200).json({ token });
+// });
+
+// /* GET LOGGED-IN USER */
+// router.get('/getuser', authenticateToken, async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user._id).select('-password');
+//     res.status(200).json(user);
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// });
+
+// /* ✅ UPDATE PROFILE (NO :id — USE JWT) */
+// router.put(
+//   '/update-profile',
+//   authenticateToken,
+//   upload.single('profileImage'),
+//   async (req, res) => {
+//     try {
+//       const updateData = {
+//         name: req.body.name,
+//         email: req.body.email
+//       };
+
+//       if (req.file) {
+//         updateData.profileImage = req.file.path; // Cloudinary URL
+//       }
+
+//       const updatedUser = await User.findByIdAndUpdate(
+//         req.user._id,
+//         updateData,
+//         { new: true }
+//       );
+
+//       res.status(200).json(updatedUser);
+//     } catch (err) {
+//       res.status(500).json(err);
+//     }
+//   }
+// );
+
+// module.exports = router;
 
