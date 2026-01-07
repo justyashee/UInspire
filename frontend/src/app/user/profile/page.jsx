@@ -47,19 +47,19 @@ export default function ProfilePage() {
           },
         });
 
-        
-        
+
+
         if (!projectsResponse.ok) {
           console.warn(`Projects API failed: ${projectsResponse.status}, using empty array`);
           setProjects([]);
           setLoading(false);
           return;
         }
-        
+
         const projectsData = await projectsResponse.json();
         console.log(projectsData);
         const projectsList = Array.isArray(projectsData) ? projectsData : projectsData.projects || [];
-        setProjects(projectsList.slice(0, 3));
+        setProjects(projectsList);
         setLoading(false);
 
       } catch (error) {
@@ -149,7 +149,7 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {projects.map((project, index) => (
                   <Link key={project._id || index} href={`/user/generator/${project._id}`}>
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -162,18 +162,18 @@ export default function ProfilePage() {
                                      border border-purple-700/30 flex items-center justify-center
                                      relative group">
                         {project.codeImage ? (
-                          <img 
-                            src={project.codeImage} 
-                            alt={project.name} 
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                          <img
+                            src={project.codeImage}
+                            alt={project.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.target.style.display = 'none';
                             }}
                           />
                         ) : project.preview ? (
-                          <img 
-                            src={project.preview} 
-                            alt={project.name} 
+                          <img
+                            src={project.preview}
+                            alt={project.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.target.style.display = 'none';
