@@ -34,7 +34,12 @@ const SignUp = () => {
     }),
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        const res = await axios.post('http://localhost:5000/user/add', values);
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
+          values
+        );
+
+
         if (res.status === 200) {
 
           toast.success('Signup successful!');
@@ -70,8 +75,8 @@ const SignUp = () => {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative z-10 w-full max-w-md bg-[#0e0e1a]/80 backdrop-blur-xl border border-purple-800/50 rounded-3xl p-8 shadow-[0_0_25px_rgba(128,0,255,0.3)]"
       >
-        
-        
+
+
 
         <h2 className="text-3xl font-bold text-white text-center mb-2">
           Create Your <span className="text-purple-400">Account</span>
@@ -109,8 +114,8 @@ const SignUp = () => {
               onBlur={formik.handleBlur}
               value={formik.values.fullName}
               className={`bg-transparent border ${formik.errors.fullName && formik.touched.fullName
-                  ? 'border-red-500'
-                  : 'border-gray-700'
+                ? 'border-red-500'
+                : 'border-gray-700'
                 } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.fullName && formik.touched.fullName && (
@@ -127,8 +132,8 @@ const SignUp = () => {
               onBlur={formik.handleBlur}
               value={formik.values.email}
               className={`bg-transparent border ${formik.errors.email && formik.touched.email
-                  ? 'border-red-500'
-                  : 'border-gray-700'
+                ? 'border-red-500'
+                : 'border-gray-700'
                 } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.email && formik.touched.email && (
@@ -145,8 +150,8 @@ const SignUp = () => {
               onBlur={formik.handleBlur}
               value={formik.values.password}
               className={`bg-transparent border ${formik.errors.password && formik.touched.password
-                  ? 'border-red-500'
-                  : 'border-gray-700'
+                ? 'border-red-500'
+                : 'border-gray-700'
                 } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500 w-full`}
             />
             {formik.errors.password && formik.touched.password && (
