@@ -3,7 +3,12 @@ const express = require('express');
 const app = express();
 const UserRouter = require('./routers/UserRouter');
 const ProjectRouter = require('./routers/ProjectRouter')
-const cors = require('cors');
+// const cors = require('cors');
+const cors = require("cors");
+app.use(cors({
+  origin: "*"
+}));
+
 
 
 const port = 5000;
