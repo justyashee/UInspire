@@ -38,8 +38,6 @@ const SignUp = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
           values
         );
-
-
         if (res.status === 200) {
 
           toast.success('Signup successful!');
