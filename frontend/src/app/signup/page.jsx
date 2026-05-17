@@ -35,7 +35,7 @@ const SignUp = () => {
         onSubmit: async (values, { setSubmitting, resetForm }) => {
             try {
                 const res = await axios.post(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/auth/signup`,
+                    `${process.env.NEXT_PUBLIC_API_URL}/user/add`,
                     values
                 );
                 if (res.status === 200) {
