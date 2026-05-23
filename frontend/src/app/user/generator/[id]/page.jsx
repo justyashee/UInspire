@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
@@ -13,6 +13,7 @@ export default function GeneratorPage() {
   const [code, setCode] = useState('// Generated code will appear here...');
   const [editedCode, setEditedCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [error, setError] = useState(null);
@@ -22,7 +23,11 @@ export default function GeneratorPage() {
   const [fullscreenPreview, setFullscreenPreview] = useState(false);
 
   const iframeRef = useRef(null);
-  const { id } = useParams();
+
+
+  const params = useParams();
+  const id = params?.id;
+  const router = useRouter();
 
   // Fetch existing project data on mount
   useEffect(() => {
@@ -44,8 +49,8 @@ export default function GeneratorPage() {
         setCode(response.data.code || '// Generated code will appear here...');
         setEditedCode(response.data.code || '// Generated code will appear here...');
       } catch (err) {
-        console.error(err);
-        setError('');
+        console.error('Fetch error:', err);
+        setError('Failed to load project data.');
       } finally {
         setIsLoadingData(false);
       }
@@ -54,15 +59,27 @@ export default function GeneratorPage() {
     fetchProjectData();
   }, [id]);
 
+  useEffect(() => {
+    if (!id || id === '[id]') {
+      router.push('/user/projectHistory');
+    }
+  }, [id]);
+
   useEffect(() => setError(null), [prompt]);
   useEffect(() => setEditedCode(code), [code]);
 
-  // Update iframe content when code changes
+  // Update iframe content when editedCode changes
   useEffect(() => {
     if (iframeRef.current && editedCode) {
       iframeRef.current.srcdoc = editedCode;
     }
   }, [editedCode]);
+  // Redirects to dashboard if no valid ID
+  useEffect(() => {
+    if (!id || id === '[id]') {
+      router.push('/user/projectHistory');
+    }
+  }, [id]);
 
   const handleGenerate = async () => {
     const trimmed = prompt.trim();
@@ -82,14 +99,13 @@ export default function GeneratorPage() {
         body: JSON.stringify({ prompt: trimmed, projectId: id }),
       });
 
-      if (!response.ok) {
-        throw new Error('API request failed.');
-      }
+      if (!response.ok) throw new Error('API request failed.');
 
       const data = await response.json();
       setCode(data || '// Error: No code returned.');
       setEditedCode(data || '// Error: No code returned.');
       setSuccessMessage('Code generated successfully!');
+      setHasGenerated(true);
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (err) {
       console.error(err);
@@ -106,11 +122,17 @@ export default function GeneratorPage() {
       return;
     }
 
+
+    if (!id) {
+      setError('Project ID is missing. Please reload the page.');
+      return;
+    }
+
     setIsSaving(true);
     setError(null);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/project/update-code`,
         { projectId: id, code: editedCode },
         {
@@ -164,7 +186,7 @@ export default function GeneratorPage() {
           <h2 className="text-xl font-bold text-white">Code Editor</h2>
           <button
             onClick={() => setFullscreenEditor(false)}
-            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg"
+            className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white"
           >
             Exit Fullscreen
           </button>
@@ -196,7 +218,7 @@ export default function GeneratorPage() {
     return (
       <div className="fixed inset-0 bg-white z-50 flex flex-col">
         <div className="flex justify-between items-center p-4 bg-gray-100 border-b border-gray-300">
-          <h2 className="text-xl font-bold">Preview</h2>
+          <h2 className="text-xl font-bold text-gray-800">Preview</h2>
           <button
             onClick={() => setFullscreenPreview(false)}
             className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg text-white"
@@ -218,7 +240,7 @@ export default function GeneratorPage() {
     <div className="min-h-screen bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 py-12">
+      <main className="max-w-7xl mx-auto px-6 py-20">
         <motion.div
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -233,6 +255,11 @@ export default function GeneratorPage() {
           </p>
         </motion.div>
 
+        {/* Loading state */}
+        {isLoadingData && (
+          <p className="text-purple-400 mb-4 animate-pulse">Loading project data...</p>
+        )}
+
         {/* Input */}
         <textarea
           value={prompt}
@@ -243,9 +270,9 @@ export default function GeneratorPage() {
               handleGenerate();
             }
           }}
-          className="w-full p-4 bg-[#0f0f1a] rounded-lg text-white placeholder-gray-500"
+          className="w-full p-4 bg-[#0f0f1a] rounded-lg text-white placeholder-gray-500 border border-purple-900/30 focus:outline-none focus:border-purple-500"
           placeholder="Describe your UI here..."
-          rows="4"
+          rows="2"
         />
 
         {/* Buttons */}
@@ -253,14 +280,14 @@ export default function GeneratorPage() {
           <button
             onClick={handleGenerate}
             disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="px-6 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-semibold"
           >
-            {isLoading ? 'Generating…' : 'Generate'}
+           {isLoading ? 'Generating…' : code !== '// Generated code will appear here...' ? 'Regenerate ↺' : 'Generate'}
           </button>
 
           <button
             onClick={resetAll}
-            className="px-6 py-2 bg-gray-600 rounded-lg hover:bg-gray-700"
+            className="px-6 py-2 bg-gray-600 rounded-lg hover:bg-gray-700 font-semibold"
           >
             Reset
           </button>
@@ -286,18 +313,10 @@ export default function GeneratorPage() {
               </button>
             </div>
 
-            <div
-              className="
-          bg-gradient-to-br from-[#0a0a1a] to-[#050509]
-          p-[2px] rounded-2xl shadow-xl 
-          border border-purple-800/30
-          hover:shadow-purple-600/40 
-          transition-all duration-300
-        "
-            >
+            <div className="bg-gradient-to-br from-[#0a0a1a] to-[#050509] p-[2px] rounded-2xl shadow-xl border border-purple-800/30 hover:shadow-purple-600/40 transition-all duration-300">
               <div className="rounded-xl overflow-hidden bg-[#0c0c14] border border-purple-900/40">
                 <Editor
-                  height="500px"
+                  height="250px"
                   language="html"
                   theme="vs-dark"
                   value={editedCode}
@@ -323,7 +342,7 @@ export default function GeneratorPage() {
                 disabled={isSaving}
                 className="px-6 py-2 rounded-lg font-semibold bg-green-600 hover:bg-green-700 disabled:opacity-50"
               >
-                {isSaving ? 'Saving…' : 'Save Code'}
+                {isSaving ? 'Saving…' : successMessage === 'Code saved successfully!' ? 'Saved! ✓' : 'Save Code'}
               </button>
               <button
                 onClick={handleCopyCode}
@@ -350,7 +369,7 @@ export default function GeneratorPage() {
             <iframe
               ref={iframeRef}
               title="preview"
-              className="w-full h-[500px] rounded-xl border border-gray-600 bg-white"
+              className="w-full h-[250px] rounded-xl border border-gray-600 bg-white"
               sandbox="allow-scripts allow-same-origin"
             />
           </div>

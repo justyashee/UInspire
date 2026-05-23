@@ -24,14 +24,14 @@ const Login = () => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const res = await axios.post('http://localhost:5000/user/authenticate', values);
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values);;
         if (res.status === 200) {
           const token = res.data.token;
-          
+
           // Call login with token and null user data
           // User data will be fetched by fetchUserData in AppContext
           login(token, null);
-          
+
           toast.success('Login successful!');
           router.push('/user/generator/[id]', '/user/generator/default');
         }
@@ -133,8 +133,8 @@ const Login = () => {
               name="email"
               placeholder="Enter your email..."
               className={`w-full bg-transparent border ${formik.errors.email && formik.touched.email
-                  ? 'border-red-500'
-                  : 'border-gray-700'
+                ? 'border-red-500'
+                : 'border-gray-700'
                 } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -152,8 +152,8 @@ const Login = () => {
               name="password"
               placeholder="Enter your password..."
               className={`w-full bg-transparent border ${formik.errors.password && formik.touched.password
-                  ? 'border-red-500'
-                  : 'border-gray-700'
+                ? 'border-red-500'
+                : 'border-gray-700'
                 } text-gray-300 px-4 py-3 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-600 placeholder-gray-500`}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
