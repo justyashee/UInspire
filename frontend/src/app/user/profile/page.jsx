@@ -173,7 +173,7 @@ export default function ProfilePage() {
                           {project.prompt || 'Untitled Project'}
                         </h4>
                         <p className="text-gray-400 text-sm mt-2 line-clamp-2">
-                          {project.prompt || 'View or regenerate this UI'}
+                          View or regenerate this UI
                         </p>
                         <div className="flex justify-between items-center mt-4">
                           <p className="text-gray-500 text-xs">
