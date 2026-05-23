@@ -12,7 +12,6 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -23,7 +22,6 @@ export default function ProfilePage() {
           return;
         }
 
-        // Fetch user data
         const userResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/getuser`, {
           method: 'GET',
           headers: {
@@ -32,15 +30,11 @@ export default function ProfilePage() {
           },
         });
 
-        if (!userResponse.ok) {
-          throw new Error(`User API failed: ${userResponse.status}`);
-        }
+        if (!userResponse.ok) throw new Error(`User API failed: ${userResponse.status}`);
 
         const userData = await userResponse.json();
         setUser(userData);
-        console.log(userData);
 
-        // Fetch projects
         const projectsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/getbyuser`, {
           method: 'GET',
           headers: {
@@ -49,17 +43,13 @@ export default function ProfilePage() {
           },
         });
 
-
-
         if (!projectsResponse.ok) {
-          console.warn(`Projects API failed: ${projectsResponse.status}, using empty array`);
           setProjects([]);
           setLoading(false);
           return;
         }
 
         const projectsData = await projectsResponse.json();
-        console.log(projectsData);
         const projectsList = Array.isArray(projectsData) ? projectsData : projectsData.projects || [];
         setProjects(projectsList);
         setLoading(false);
@@ -76,15 +66,11 @@ export default function ProfilePage() {
 
   if (error && !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center
-                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
-                      text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
         <div className="text-center">
           <p className="text-red-400 mb-4">Error: {error}</p>
           <Link href="/login">
-            <button className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">
-              Go to Login
-            </button>
+            <button className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg">Go to Login</button>
           </Link>
         </div>
       </div>
@@ -93,9 +79,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center
-                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
-                      text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
         <p>Loading profile...</p>
       </div>
     );
@@ -103,9 +87,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center
-                      bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f]
-                      text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#050505] via-[#0a0a1a] to-[#0f001f] text-white">
         <p>No user data found</p>
       </div>
     );
@@ -132,14 +114,12 @@ export default function ProfilePage() {
             {user.profileImage ? (
               <img src={user.profileImage} alt={user.name} className="w-full h-full object-cover" />
             ) : (
-              user.name?.charAt(0).toUpperCase()
+              user.email?.charAt(0).toUpperCase()
             )}
           </div>
 
           <div className="flex-1">
-            <h2 className="text-2xl font-bold text-purple-300">
-              {user.name}
-            </h2>
+            <h2 className="text-2xl font-bold text-purple-300">{user.name || user.email}</h2>
             <p className="text-gray-400">{user.email}</p>
           </div>
 
@@ -148,7 +128,7 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        {/* PROJECT HISTORY SHORTCUT */}
+        {/* RECENT PROJECTS */}
         <Section title="Recent Projects">
           {projects.length > 0 ? (
             <>
@@ -160,63 +140,57 @@ export default function ProfilePage() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.1 }}
                       whileHover={{ y: -8 }}
-                      className="p-5 rounded-xl bg-black/40 border border-purple-700/40
-                                 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition cursor-pointer
-                                 h-full block">
-                      {/* Project Code Preview */}
-                      <div className="w-full h-48 mb-4 bg-black/80 rounded-lg overflow-hidden
-                                     border border-purple-700/30 flex items-center justify-center
-                                     relative group">
-                        {project.codeImage ? (
-                          <img
-                            src={project.codeImage}
-                            alt={project.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                        ) : project.preview ? (
-                          <img
-                            src={project.preview}
-                            alt={project.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
+                      className="rounded-xl bg-black/40 border border-purple-700/40
+                                 hover:shadow-[0_0_25px_rgba(168,85,247,0.4)] transition cursor-pointer overflow-hidden"
+                    >
+                      {/* Mini iframe Preview */}
+                      <div className="w-full h-40 bg-[#0f0f1f] overflow-hidden relative">
+                        {project.code ? (
+                          <iframe
+                            srcDoc={project.code}
+                            title="preview"
+                            sandbox="allow-scripts"
+                            className="border-none absolute top-0 left-0"
+                            style={{
+                              width: '200%',
+                              height: '200%',
+                              transform: 'scale(0.5)',
+                              transformOrigin: 'top left',
+                              pointerEvents: 'none',
                             }}
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-purple-600/30 to-blue-600/30
-                                         flex flex-col items-center justify-center text-gray-400 p-4 text-center">
+                          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
                             <div className="text-4xl mb-2">🎨</div>
                             <span className="text-sm">No Preview Available</span>
                           </div>
                         )}
                       </div>
 
-                      <h4 className="text-purple-300 font-semibold truncate">
-                        {project.name || 'Untitled Project'}
-                      </h4>
-                      <p className="text-gray-400 text-sm mt-2 line-clamp-2">
-                        {project.description || 'View or regenerate this UI'}
-                      </p>
-                      <div className="flex justify-between items-center mt-4">
-                        <p className="text-gray-500 text-xs">
-                          {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}
+                      {/* Card Info */}
+                      <div className="p-5">
+                        <h4 className="text-purple-300 font-semibold truncate">
+                          {project.prompt || 'Untitled Project'}
+                        </h4>
+                        <p className="text-gray-400 text-sm mt-2 line-clamp-2">
+                          {project.prompt || 'View or regenerate this UI'}
                         </p>
-                        <span className="text-purple-400 text-xs font-semibold">
-                          View →
-                        </span>
+                        <div className="flex justify-between items-center mt-4">
+                          <p className="text-gray-500 text-xs">
+                            {project.createdAt ? new Date(project.createdAt).toLocaleDateString() : 'N/A'}
+                          </p>
+                          <span className="text-purple-400 text-xs font-semibold">View →</span>
+                        </div>
                       </div>
                     </motion.div>
                   </Link>
                 ))}
               </div>
+
               <div className="mt-8 flex justify-center">
                 <Link href="/user/projectHistory">
-                  <button className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl 
-                                   font-semibold transition shadow-[0_0_25px_rgba(168,85,247,0.5)]
-                                   hover:shadow-[0_0_35px_rgba(168,85,247,0.7)]">
+                  <button className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl
+                                     font-semibold transition shadow-[0_0_25px_rgba(168,85,247,0.5)]">
                     View All Projects
                   </button>
                 </Link>
@@ -233,7 +207,6 @@ export default function ProfilePage() {
             <Link href="/user/editprofile">
               <ActionButton label="Edit Profile" />
             </Link>
-
             <ActionButton label="Logout" />
             <ActionButton danger label="Delete Account" />
           </div>
@@ -246,14 +219,10 @@ export default function ProfilePage() {
   );
 }
 
-/* ---------------- COMPONENTS ---------------- */
-
 function Section({ title, children }) {
   return (
     <div>
-      <h3 className="text-xl font-semibold text-purple-300 mb-6">
-        {title}
-      </h3>
+      <h3 className="text-xl font-semibold text-purple-300 mb-6">{title}</h3>
       {children}
     </div>
   );
@@ -264,16 +233,6 @@ function Stat({ label, value }) {
     <div className="text-center">
       <div className="text-2xl font-bold text-cyan-300">{value}</div>
       <div className="text-gray-400 text-sm">{label}</div>
-    </div>
-  );
-}
-
-function Preference({ label, value }) {
-  return (
-    <div className="flex justify-between p-4 mb-3 rounded-xl
-                    bg-black/40 border border-purple-700/30">
-      <span className="text-gray-300">{label}</span>
-      <span className="text-purple-300 font-medium">{value}</span>
     </div>
   );
 }
@@ -291,4 +250,3 @@ function ActionButton({ label, danger }) {
     </button>
   );
 }
-

@@ -119,35 +119,53 @@ const DashboardPage = () => {
                   key={project._id}
                   whileHover={{ scale: 1.04, y: -6 }}
                   transition={{ type: 'spring', stiffness: 180 }}
-                  className="p-7 rounded-2xl bg-gradient-to-br from-[#0f0f1f] to-[#121232] border border-purple-800
-                             shadow-[0_0_30px_rgba(168,85,247,0.25)] hover:shadow-[0_0_45px_rgba(168,85,247,0.6)]
-                             transition-all flex flex-col justify-between"
+                  className="rounded-2xl bg-gradient-to-br from-[#0f0f1f] to-[#121232] border border-purple-800
+               shadow-[0_0_30px_rgba(168,85,247,0.25)] hover:shadow-[0_0_45px_rgba(168,85,247,0.6)]
+               transition-all flex flex-col justify-between overflow-hidden"
                 >
-                  <h3 className="text-2xl font-semibold text-purple-300 mb-3 line-clamp-2">
-                    {project.prompt || 'Untitled Project'}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-4">
-                    Created:{' '}
-                    <span className="text-purple-300">
-                      {new Date(project.createdAt).toLocaleDateString()}
-                    </span>
-                  </p>
-                  <p className="text-gray-300 text-sm mb-6 line-clamp-3">
-                    {project.preview || 'No description available'}
-                  </p>
-                  <div className="flex items-center justify-between mt-auto pt-4 border-t border-purple-700/40">
-                    <Link
-                      href={`/user/generator/${project._id}`}
-                      className="px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition font-medium"
-                    >
-                      View
-                    </Link>
-                    <button
-                      onClick={() => deleteProject(project._id)}
-                      className="px-4 py-2 rounded-xl bg-red-600/20 text-red-300 hover:bg-red-600/30 transition font-medium"
-                    >
-                      Delete
-                    </button>
+                  {/* Mini Preview */}
+                  <div className="relative w-full h-40 bg-white overflow-hidden">
+                    {project.code ? (
+                      <iframe
+                        srcDoc={project.code}
+                        title="preview"
+                        className="w-full h-full border-none"
+                        sandbox="allow-scripts"
+                        style={{ transform: 'scale(0.5)', transformOrigin: 'top left', width: '200%', height: '200%', pointerEvents: 'none' }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#0f0f1f] flex flex-col items-center justify-center text-gray-500 gap-2">
+                        <span className="text-3xl">🎨</span>
+                        <span className="text-sm">No Preview Available</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="text-lg font-semibold text-purple-300 mb-2 line-clamp-2">
+                      {project.prompt || 'Untitled Project'}
+                    </h3>
+                    <p className="text-gray-400 text-sm mb-4">
+                      Created:{' '}
+                      <span className="text-purple-300">
+                        {new Date(project.createdAt).toLocaleDateString()}
+                      </span>
+                    </p>
+                    <div className="flex items-center justify-between mt-auto pt-4 border-t border-purple-700/40">
+                      <Link
+                        href={`/user/generator/${project._id}`}
+                        className="px-4 py-2 rounded-xl bg-blue-600/20 text-blue-300 hover:bg-blue-600/30 transition font-medium"
+                      >
+                        View
+                      </Link>
+                      <button
+                        onClick={() => deleteProject(project._id)}
+                        className="px-4 py-2 rounded-xl bg-red-600/20 text-red-300 hover:bg-red-600/30 transition font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 </motion.div>
               ))
