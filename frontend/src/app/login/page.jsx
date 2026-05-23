@@ -24,7 +24,7 @@ const Login = () => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values);;
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/authenticate`, values);
         if (res.status === 200) {
           const token = res.data.token;
 
