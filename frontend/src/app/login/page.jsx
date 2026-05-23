@@ -33,7 +33,7 @@ const Login = () => {
           login(token, null);
 
           toast.success('Login successful!');
-          router.push('/user/generator/default');;
+          router.push('/user/projectHistory');;
         }
       } catch (error) {
         console.error(error);
