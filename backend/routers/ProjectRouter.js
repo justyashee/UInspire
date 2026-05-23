@@ -58,18 +58,22 @@ router.post('/generate-and-save', authenticateToken, async (req, res) => {
     try {
         const { prompt, projectId } = req.body;
         const userId = req.user._id;
-        // const { generatedCode, title, description } = await callAIGeneratorService(prompt);
+
         const generatedResult = await require('../geminiService').getPromptResponse(prompt);
 
-        // const newProjectData = {
-        //     user: userId,
-        //     title: title || prompt.substring(0, 50),
-        //     prompt: prompt,
-        //     code: generatedCode,
-        //     description: description || 'AI generated component.',
-        // };
+        const updatedDoc = await Model.findByIdAndUpdate(
+            projectId,
+            {
+                prompt: prompt,        // ← saves the prompt
+                code: generatedResult, // ← saves the generated code
+                updatedAt: new Date()
+            },
+            { new: true }
+        );
 
-        // const doc = Model.findByIdAndUpdate(newProjectData);
+        if (!updatedDoc) {
+            return res.status(404).json({ message: 'Project not found.' });
+        }
 
         res.status(201).json(generatedResult);
 
@@ -78,7 +82,6 @@ router.post('/generate-and-save', authenticateToken, async (req, res) => {
         res.status(500).json({ message: 'Failed to generate and save project.', error: error.message });
     }
 });
-
 router.post("/create", async (req, res) => {
     try {
         const { prompt, code, preview, createdAt } = req.body;
@@ -126,7 +129,7 @@ router.post('/update-code', authenticateToken, async (req, res) => {
 router.get('/getbyid/:id', authenticateToken, async (req, res) => {
     try {
         const doc = await Model.findById(req.params.id);
-        
+
         if (!doc) {
             return res.status(404).json({ message: 'Project not found.' });
         }
